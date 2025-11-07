@@ -1,458 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>📸 Smart Camtin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>📸 Smart Camtin — Firebase Auth + Filters</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #0078d7;
-      --primary-dark: #005fa3;
-      --success: #28a745;
-      --success-dark: #218838;
-      --bg-gradient: radial-gradient(circle at top, #232526, #414345);
+    :root{
+      --primary:#0078d7; --primary-dark:#005fa3; --bg:#111; --card:rgba(255,255,255,0.04);
     }
+    *{box-sizing:border-box}
+    body{font-family:"Poppins",sans-serif;margin:0;background:linear-gradient(180deg,#151515,#2b2b2b);color:#fff;min-height:100vh}
+    nav{position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);z-index:50}
+    nav h1{margin:0;font-size:18px;display:flex;gap:8px;align-items:center}
+    .nav-right{display:flex;align-items:center;gap:10px}
+    .btn{background:var(--primary);border:none;padding:8px 12px;border-radius:8px;color:#fff;cursor:pointer;transition:0.2s}
+    .btn:hover{background:var(--primary-dark)}
+    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.08)}
+    main{margin-top:80px;display:flex;flex-direction:column;align-items:center;padding:28px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.6);max-width:980px;width:100%}
+    .auth-wrap{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+    .auth-box{width:300px;padding:16px;border-radius:10px;background:rgba(255,255,255,0.02)}
+    input{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.07);background:transparent;color:#fff}
+    label{display:block;text-align:left;font-size:13px;margin-top:6px;opacity:0.9}
+    /* camera */
+    .camera-container{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:18px}
+    video,canvas{width:480px;height:360px;border-radius:12px;background:#000;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
+    #controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px}
+    .small{font-size:13px;opacity:0.85}
+    footer{margin-top:22px;text-align:center;opacity:0.6}
+    @media(max-width:600px){video,canvas{width:320px;height:240px}}
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      margin: 0;
-      background: var(--bg-gradient);
-      color: #fff;
-      overflow-x: hidden;
-      text-align: center;
-    }
-
-    h1 {
-      margin-bottom: 15px;
-      text-shadow: 0 0 10px rgba(255,255,255,0.25);
-    }
-
-    .camera-container {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    video, canvas {
-      width: 480px;
-      height: 360px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
-      transition: all 0.3s ease-in-out;
-      background: #000;
-    }
-
-    .video-glow {
-      box-shadow: 0 0 25px rgba(255, 105, 180, 0.5);
-    }
-
-    #controls {
-      margin-top: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    button, select, input[type="range"], a.button-link {
-      background: var(--primary);
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      color: white;
-      font-size: 15px;
-      cursor: pointer;
-      transition: background 0.25s;
-    }
-
-    button:hover, select:hover, a.button-link:hover {
-      background: var(--primary-dark);
-    }
-
-    input[type="range"] {
-      width: 150px;
-      cursor: pointer;
-      accent-color: var(--primary);
-    }
-
-    a.button-link {
-      text-decoration: none;
-      background: var(--success);
-      font-weight: 600;
-    }
-
-    a.button-link:hover {
-      background: var(--success-dark);
-    }
-
-    #status {
-      margin-top: 12px;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-
-    #countdown {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 48px;
-      font-weight: bold;
-      color: #ff5252;
-      text-shadow: 0 0 20px #000;
-      pointer-events: none;
-    }
-
-    /* 🎬 Recording timer */
-    #recording-timer {
-      position: absolute;
-      bottom: 10px;
-      right: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #00ff88;
-      text-shadow: 0 0 8px #000;
-      letter-spacing: 1px;
-    }
-
-    #beauty-controls {
-      display: none;
-      margin-top: 15px;
-      text-align: center;
-      background: rgba(255,255,255,0.08);
-      padding: 12px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
-      width: 480px;
-    }
-
-    #beauty-controls label {
-      display: block;
-      margin: 8px 0;
-      font-size: 14px;
-    }
-
-    @keyframes fadeOut {
-      from {opacity: 1; transform: translateY(0);}
-      to {opacity: 0; transform: translateY(20px);}
-    }
-
-    footer {
-      margin-top: 25px;
-      font-size: 14px;
-      opacity: 0.6;
-    }
+    /* new filter buttons */
+    .filter-buttons{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+    .filter-btn{padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;cursor:pointer;font-size:13px;transition:0.2s}
+    .filter-btn:hover{background:var(--primary-dark)}
+    .filter-btn.active{background:var(--primary);border-color:var(--primary-dark)}
   </style>
 </head>
-
 <body>
-  <header>
-    <h1>📸 Smart Camtin</h1>
-    <p><strong>CAM IS FREE FOR YOU TO USE</strong></p>
-  </header>
 
-  <main>
-    <section class="camera-container">
+<nav>
+  <h1>📸 Smart Camtin</h1>
+  <div class="nav-right">
+    <div id="user-area" style="display:none;align-items:center;">
+      <div id="user-name" class="small">Hi, user</div>
+      <button id="signout" class="btn">Sign out</button>
+    </div>
+    <div id="auth-buttons" style="display:none;">
+      <button id="open-auth" class="btn">Sign In / Sign Up</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div id="auth-card" class="card" style="max-width:720px;margin-bottom:16px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <h2 style="margin:0 0 6px 0">Welcome to Smart Camtin</h2>
+        <div class="small">Create an account or sign in to access the camera features.</div>
+      </div>
+      <div id="auth-status" class="small">Not signed in</div>
+    </div>
+
+    <div style="margin-top:14px;" id="auth-ui">
+      <div class="auth-wrap">
+        <div class="auth-box">
+          <h3 style="margin:0 0 8px 0">Sign up (email)</h3>
+          <label>Email</label>
+          <input id="su-email" type="email" placeholder="you@example.com" />
+          <label>Password</label>
+          <input id="su-pass" type="password" placeholder="Enter password" />
+          <button id="btn-signup" class="btn" style="width:100%;margin-top:8px">Create Account</button>
+        </div>
+
+        <div class="auth-box">
+          <h3 style="margin:0 0 8px 0">Sign in</h3>
+          <label>Email</label>
+          <input id="si-email" type="email" placeholder="you@example.com" />
+          <label>Password</label>
+          <input id="si-pass" type="password" placeholder="Password" />
+          <button id="btn-signin" class="btn" style="width:100%;margin-top:8px">Sign In</button>
+          <div style="margin-top:8px">
+            <button id="btn-google" class="btn secondary" style="width:100%;">Sign in with Google</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMERA APP -->
+  <div id="app" class="card" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <h2 style="margin:0">Camera</h2>
+        <div class="small">Capture photos — try our new beauty & filter presets!</div>
+      </div>
+      <div id="profile-info" style="text-align:right">
+        <div id="profile-email" class="small"></div>
+      </div>
+    </div>
+
+    <div class="camera-container">
       <video id="video" autoplay playsinline></video>
       <canvas id="canvas" width="480" height="360" hidden></canvas>
-      <div id="countdown"></div>
-      <div id="recording-timer"></div> <!-- ⏱ Added timer -->
-    </section>
 
-    <section id="controls">
-      <button id="capture">📷 Capture</button>
-      <button id="flip">🔁 Flip</button>
-      <button id="portrait">🌟 Portrait</button>
-      <button id="trueBeauty">💚 True You</button>
-      <button id="beautyMode">💄 Beauty</button>
-      <button id="lightMakeup">💋 Light Makeup</button>
-      <button id="record">🎥 Record</button>
-      <button id="stop" disabled>⏹ Stop</button>
+      <div id="controls">
+        <button id="capture" class="btn">📷 Capture</button>
+        <button id="flip" class="btn secondary">🔁 Flip</button>
+        <button id="toggle-beauty" class="btn">💄 Beauty</button>
+        <a id="downloadLink" class="btn" download style="display:none;">📥 Download</a>
+      </div>
 
-      <label>⏱ Timer:
-        <select id="timer">
-          <option value="0">Off</option>
-          <option value="3">3s</option>
-          <option value="5">5s</option>
-          <option value="10">10s</option>
-        </select>
-      </label>
+      <!-- Beauty controls -->
+      <div id="beauty-controls" style="display:none;margin-top:10px;width:480px;text-align:left;">
+        <label>Smoothness: <input id="smooth" type="range" min="0" max="5" step="0.1" value="0"></label>
+        <label>Tone: <input id="tone" type="range" min="0" max="50" value="0"></label>
+        <label>Saturation: <input id="sat" type="range" min="50" max="150" value="100"></label>
 
-      <label>⚡ Speed:
-        <select id="speed">
-          <option value="0.5">0.5x</option>
-          <option value="1" selected>1x</option>
-          <option value="1.5">1.5x</option>
-          <option value="2">2x</option>
-        </select>
-      </label>
+        <div class="filter-buttons">
+          <button class="filter-btn" data-filter="none">None</button>
+          <button class="filter-btn" data-filter="warm">Warm</button>
+          <button class="filter-btn" data-filter="cool">Cool</button>
+          <button class="filter-btn" data-filter="vintage">Vintage</button>
+          <button class="filter-btn" data-filter="bw">B&W</button>
+          <button class="filter-btn" data-filter="bright">Bright</button>
+        </div>
 
-      <label>☀️ Brightness:
-        <input type="range" id="brightness" min="50" max="150" value="100">
-      </label>
-
-      <label>🎨 Filter:
-        <select id="filter">
-          <option value="none">No Filter</option>
-          <option value="grayscale(100%)">Grayscale</option>
-          <option value="sepia(70%)">Sepia</option>
-          <option value="contrast(140%)">High Contrast</option>
-          <option value="blur(2px)">Soft Blur</option>
-          <option value="invert(100%)">Invert Colors</option>
-        </select>
-      </label>
-
-      <a id="downloadLink" class="button-link" hidden download>📥 Download</a>
-    </section>
-
-    <section id="beauty-controls">
-      <label>Smoothness:
-        <input type="range" id="smoothness" min="0" max="5" step="0.1" value="0">
-      </label>
-      <label>Tone (Warmth):
-        <input type="range" id="tone" min="0" max="50" value="0">
-      </label>
-      <label>Saturation:
-        <input type="range" id="saturation" min="50" max="150" value="100">
-      </label>
-    </section>
-
-    <div id="status"></div>
-  </main>
+        <label style="display:block;margin-top:8px;">
+          <input type="checkbox" id="auto-bright" /> Auto Brightness Correction
+        </label>
+      </div>
+    </div>
+  </div>
 
   <footer>
-    <p>© 2025 Smart Camtin — Built with bommmack</p>
+    <div class="small">© 2025 Smart Camtin — Enhanced Beauty & Filters Edition</div>
   </footer>
+</main>
 
-  <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const countdownEl = document.getElementById('countdown');
-    const recordingTimer = document.getElementById('recording-timer');
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+  import {
+    getAuth, onAuthStateChanged, createUserWithEmailAndPassword,
+    signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut
+  } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-    const captureBtn = document.getElementById('capture');
-    const flipBtn = document.getElementById('flip');
-    const portraitBtn = document.getElementById('portrait');
-    const trueBeautyBtn = document.getElementById('trueBeauty');
-    const beautyBtn = document.getElementById('beautyMode');
-    const lightMakeupBtn = document.getElementById('lightMakeup');
-    const recordBtn = document.getElementById('record');
-    const stopBtn = document.getElementById('stop');
-    const brightnessSlider = document.getElementById('brightness');
-    const filterSelect = document.getElementById('filter');
-    const timerSelect = document.getElementById('timer');
-    const speedSelect = document.getElementById('speed');
-    const downloadLink = document.getElementById('downloadLink');
-    const status = document.getElementById('status');
-    const beautyControls = document.getElementById('beauty-controls');
-    const smoothnessSlider = document.getElementById('smoothness');
-    const toneSlider = document.getElementById('tone');
-    const saturationSlider = document.getElementById('saturation');
+  const firebaseConfig = {
+    apiKey: "AIzaSyDwT1JTnw6rqyTaO1sbZXD624_HblKMPZM",
+    authDomain: "smartcamtin-a7e07.firebaseapp.com",
+    projectId: "smartcamtin-a7e07",
+    appId: "1:397311969979:web:d08a7a063ba1683e16f79e"
+  };
 
-    let stream = null;
-    let mediaRecorder = null;
-    let recordedChunks = [];
-    let isFlipped = false;
-    let portraitMode = false;
-    let trueBeautyMode = false;
-    let beautyMode = false;
-    let lightMakeupMode = false;
-    let recordingStartTime = null;
-    let recordingTimerInterval = null;
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    async function startCamera() {
-      try {
-        if (stream) stream.getTracks().forEach(t => t.stop());
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: isFlipped ? "user" : "environment" },
-          audio: true
-        });
-        video.srcObject = stream;
-      } catch (err) {
-        alert("Camera access denied or unavailable.");
-        console.error(err);
-      }
+  const authCard=document.getElementById('auth-card'),authStatus=document.getElementById('auth-status'),
+  appCard=document.getElementById('app'),signoutBtn=document.getElementById('signout'),
+  userArea=document.getElementById('user-area'),authButtons=document.getElementById('auth-buttons'),
+  openAuthBtn=document.getElementById('open-auth'),userNameEl=document.getElementById('user-name'),
+  profileEmail=document.getElementById('profile-email');
+
+  const suEmail=document.getElementById('su-email'),suPass=document.getElementById('su-pass'),
+  siEmail=document.getElementById('si-email'),siPass=document.getElementById('si-pass'),
+  btnSignup=document.getElementById('btn-signup'),btnSignin=document.getElementById('btn-signin'),
+  btnGoogle=document.getElementById('btn-google');
+
+  const video=document.getElementById('video'),canvas=document.getElementById('canvas'),
+  captureBtn=document.getElementById('capture'),flipBtn=document.getElementById('flip'),
+  toggleBeauty=document.getElementById('toggle-beauty'),downloadLink=document.getElementById('downloadLink'),
+  beautyControls=document.getElementById('beauty-controls'),
+  smooth=document.getElementById('smooth'),tone=document.getElementById('tone'),
+  sat=document.getElementById('sat'),autoBright=document.getElementById('auto-bright');
+
+  const filterBtns=document.querySelectorAll('.filter-btn');
+  let stream=null,isFlipped=false,beautyOn=false,currentFilter="none";
+
+  function notifyAuth(t){authStatus.textContent=t;}
+
+  btnSignup.onclick=async()=>{try{await createUserWithEmailAndPassword(auth,suEmail.value,suPass.value);alert("Account created!");}
+  catch(e){alert("Sign up error:"+e.message)}}
+  btnSignin.onclick=async()=>{try{await signInWithEmailAndPassword(auth,siEmail.value,siPass.value);alert("Signed in!");}
+  catch(e){alert("Sign in error:"+e.message)}}
+  btnGoogle.onclick=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider());alert("Google sign-in success!");}
+  catch(e){alert("Google error:"+e.message)}}
+  signoutBtn.onclick=()=>signOut(auth);
+
+  openAuthBtn.onclick=()=>authCard.style.display=authCard.style.display==='none'?'block':'none';
+
+  onAuthStateChanged(auth,u=>{
+    if(u){notifyAuth("Signed in");authCard.style.display='none';appCard.style.display='block';userArea.style.display='flex';
+      authButtons.style.display='none';userNameEl.textContent=u.displayName||u.email;profileEmail.textContent=u.email;startCamera();}
+    else{notifyAuth("Not signed in");authCard.style.display='block';appCard.style.display='none';userArea.style.display='none';
+      authButtons.style.display='block';stopCamera();}
+  });
+
+  async function startCamera(){
+    try{if(stream)stream.getTracks().forEach(t=>t.stop());
+      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:isFlipped?'user':'environment'},audio:false});
+      video.srcObject=stream;
+    }catch(e){alert("Camera error:"+e.message);}
+  }
+  function stopCamera(){if(stream)stream.getTracks().forEach(t=>t.stop());video.srcObject=null;}
+
+  captureBtn.onclick=()=>{
+    canvas.hidden=false;
+    canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+    const ctx=canvas.getContext('2d');ctx.filter=video.style.filter;ctx.drawImage(video,0,0,canvas.width,canvas.height);
+    downloadLink.href=canvas.toDataURL('image/png');downloadLink.download=`smart-camtin-${Date.now()}.png`;
+    downloadLink.style.display='inline-block';alert("Captured!");
+  };
+  flipBtn.onclick=()=>{isFlipped=!isFlipped;startCamera();};
+
+  toggleBeauty.onclick=()=>{beautyOn=!beautyOn;beautyControls.style.display=beautyOn?'block':'none';applyBeauty();};
+
+  function applyBeauty(){
+    if(!beautyOn){video.style.filter='none';return;}
+    const s=smooth.value,t=tone.value,sa=sat.value;
+    let filter=`blur(${s}px) sepia(${t}%) saturate(${sa}%)`;
+    if(autoBright.checked)filter+=` brightness(1.1) contrast(1.05)`;
+    switch(currentFilter){
+      case 'warm':filter+=` hue-rotate(-10deg) contrast(1.1)`;break;
+      case 'cool':filter+=` hue-rotate(20deg) saturate(1.2)`;break;
+      case 'vintage':filter+=` sepia(0.4) contrast(1.1)`;break;
+      case 'bw':filter+=` grayscale(1) contrast(1.2)`;break;
+      case 'bright':filter+=` brightness(1.3) contrast(1.15)`;break;
     }
+    video.style.filter=filter;
+  }
 
-    function updateEffects() {
-      video.style.filter = `${filterSelect.value} brightness(${brightnessSlider.value}%)`;
-    }
+  [smooth,tone,sat,autoBright].forEach(e=>e.addEventListener('input',applyBeauty));
+  filterBtns.forEach(btn=>{
+    btn.onclick=()=>{
+      filterBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter=btn.dataset.filter;
+      applyBeauty();
+    };
+  });
 
-    captureBtn.addEventListener('click', () => {
-      canvas.hidden = false;
-      ctx.filter = video.style.filter;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageData = canvas.toDataURL('image/png');
-      downloadLink.href = imageData;
-      downloadLink.download = 'snapshot.png';
-      downloadLink.hidden = false;
-    });
-
-    flipBtn.addEventListener('click', startCamera);
-
-    portraitBtn.addEventListener('click', () => {
-      portraitMode = !portraitMode;
-      status.textContent = portraitMode ? "🌟 Portrait Mode ON" : "Portrait Mode OFF";
-    });
-
-    trueBeautyBtn.addEventListener('click', () => {
-      trueBeautyMode = !trueBeautyMode;
-      if (trueBeautyMode) {
-        video.style.filter = "brightness(105%) sepia(15%) contrast(110%) saturate(90%)";
-        showMessage("Natural is beautiful 💚");
-        trueBeautyBtn.textContent = "💚 True You (ON)";
-      } else {
-        updateEffects();
-        trueBeautyBtn.textContent = "💚 True You";
-      }
-    });
-
-    beautyBtn.addEventListener('click', () => {
-      beautyMode = !beautyMode;
-      beautyControls.style.display = beautyMode ? "block" : "none";
-      if (beautyMode) {
-        applyBeautyEffects();
-        showMessage("✨ Beauty Mode On – Adjust your look!");
-        beautyBtn.textContent = "💄 Beauty (ON)";
-      } else {
-        updateEffects();
-        beautyBtn.textContent = "💄 Beauty";
-      }
-    });
-
-    lightMakeupBtn.addEventListener('click', () => {
-      lightMakeupMode = !lightMakeupMode;
-      if (lightMakeupMode) {
-        video.style.filter = `
-          brightness(110%) 
-          contrast(110%) 
-          saturate(120%) 
-          sepia(10%) 
-          hue-rotate(-5deg) 
-          blur(0.5px)
-        `;
-        video.classList.add("video-glow");
-        showMessage("💋 Light Makeup Mode ON");
-        lightMakeupBtn.textContent = "💋 Light Makeup (ON)";
-      } else {
-        video.classList.remove("video-glow");
-        updateEffects();
-        lightMakeupBtn.textContent = "💋 Light Makeup";
-        showMessage("💋 Light Makeup Mode OFF");
-      }
-    });
-
-    function applyBeautyEffects() {
-      const smooth = smoothnessSlider.value;
-      const tone = toneSlider.value;
-      const sat = saturationSlider.value;
-      video.style.filter = `blur(${smooth}px) sepia(${tone}%) saturate(${sat}%) brightness(${brightnessSlider.value}%)`;
-    }
-
-    [smoothnessSlider, toneSlider, saturationSlider].forEach(slider =>
-      slider.addEventListener('input', applyBeautyEffects)
-    );
-
-    function showMessage(text) {
-      const msg = document.createElement("div");
-      msg.textContent = text;
-      Object.assign(msg.style, {
-        position: "fixed",
-        bottom: "20px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        fontSize: "18px",
-        background: "rgba(0,0,0,0.5)",
-        padding: "8px 14px",
-        borderRadius: "8px",
-        animation: "fadeOut 3s forwards",
-        zIndex: "999"
-      });
-      document.body.appendChild(msg);
-      setTimeout(() => msg.remove(), 3000);
-    }
-
-    recordBtn.addEventListener('click', async () => {
-      const timer = parseInt(timerSelect.value);
-      if (timer > 0) await countdown(timer);
-      startRecording();
-    });
-
-    stopBtn.addEventListener('click', stopRecording);
-
-    async function countdown(seconds) {
-      countdownEl.textContent = seconds;
-      while (seconds > 0) {
-        await new Promise(r => setTimeout(r, 1000));
-        seconds--;
-        countdownEl.textContent = seconds > 0 ? seconds : "";
-      }
-    }
-
-    function startRecording() {
-      recordedChunks = [];
-      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-      mediaRecorder.ondataavailable = e => e.data.size && recordedChunks.push(e.data);
-      mediaRecorder.onstop = saveVideo;
-      mediaRecorder.start();
-      recordBtn.disabled = true;
-      stopBtn.disabled = false;
-      status.textContent = "🔴 Recording...";
-
-      // Start timer
-      recordingStartTime = Date.now();
-      recordingTimerInterval = setInterval(updateRecordingTimer, 1000);
-      updateRecordingTimer();
-    }
-
-    function stopRecording() {
-      mediaRecorder.stop();
-      recordBtn.disabled = false;
-      stopBtn.disabled = true;
-      status.textContent = "Recording stopped.";
-
-      // Stop timer
-      clearInterval(recordingTimerInterval);
-      recordingTimer.textContent = "";
-    }
-
-    function updateRecordingTimer() {
-      const elapsed = Date.now() - recordingStartTime;
-      const totalSeconds = Math.floor(elapsed / 1000);
-      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-      const seconds = String(totalSeconds % 60).padStart(2, '0');
-      recordingTimer.textContent = `${minutes}:${seconds}`;
-    }
-
-    function saveVideo() {
-      const blob = new Blob(recordedChunks, { type: 'video/webm' });
-      const url = URL.createObjectURL(blob);
-      const playback = document.createElement("video");
-      playback.src = url;
-      playback.controls = true;
-      playback.playbackRate = parseFloat(speedSelect.value);
-      playback.width = 480;
-      playback.style.marginTop = "20px";
-      playback.style.borderRadius = "12px";
-      document.body.appendChild(playback);
-      downloadLink.href = url;
-      downloadLink.download = 'recording.webm';
-      downloadLink.hidden = false;
-    }
-
-    filterSelect.addEventListener('change', updateEffects);
-    brightnessSlider.addEventListener('input', updateEffects);
-
-    startCamera();
-  </script>
+  document.addEventListener('DOMContentLoaded',()=>authButtons.style.display='flex');
+</script>
 </body>
 </html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📸 Smart Camtin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --primary: #0078d7;
+      --primary-dark: #005fa3;
+      --success: #28a745;
+      --success-dark: #218838;
+      --bg-gradient: radial-gradient(circle at top, #232526, #414345);
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: var(--bg-gradient);
+      color: #fff;
+      overflow-x: hidden;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.25);
+    }
+
+    .camera-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    video, canvas {
+      width: 480px;
+      height: 360px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+      transition: all 0.3s ease-in-out;
+      background: #000;
+    }
+
+    .video-glow {
+      box-shadow: 0 0 25px rgba(255, 105, 180, 0.5);
+    }
+
+    #controls {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button, select, input[type="range"], a.button-link {
+      background: var(--primary);
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+
+    button:hover, select:hover, a.button-link:hover {
+      background: var(--primary-dark);
+    }
+
+    input[type="range"] {
+      width: 150px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    a.button-link {
+      text-decoration: none;
+      background: var(--success);
+      font-weight: 600;
+    }
+
+    a.button-link:hover {
+      background: var(--success-dark);
+    }
+
+    #status {
+      margin-top: 12px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    #countdown {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      font-weight: bold;
+      color: #ff5252;
+      text-shadow: 0 0 20px #000;
+      pointer-events: none;
+    }
+
+    /* 🎬 Recording timer */
+    #recording-timer {
+      position: absolute;
+      bottom: 10px;
+      right: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #00ff88;
+      text-shadow: 0 0 8px #000;
+      letter-spacing: 1px;
+    }
+
+    #beauty-controls {
+      display: none;
+      margin-top: 15px;
+      text-align: center;
+      background: rgba(255,255,255,0.08);
+      padding: 12px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      width: 480px;
+    }
+
+    #beauty-controls label {
+      display: block;
+      margin: 8px 0;
+      font-size: 14px;
+    }
+
+    @keyframes fadeOut {
+      from {opacity: 1; transform: translateY(0);}
+      to {opacity: 0; transform: translateY(20px);}
+    }
+
+    footer {
+      margin-top: 25px;
+      font-size: 14px;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>📸 Smart Camtin</h1>
+    <p><strong>CAM IS FREE FOR YOU TO USE</strong></p>
+  </header>
+
+  <main>
+    <section class="camera-container">
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas" width="480" height="360" hidden></canvas>
+      <div id="countdown"></div>
+      <div id="recording-timer"></div> <!-- ⏱ Added timer -->
+    </section>
+
+    <section id="controls">
+      <button id="capture">📷 Capture</button>
+      <button id="flip">🔁 Flip</button>
+      <button id="portrait">🌟 Portrait</button>
+      <button id="trueBeauty">💚 True You</button>
+      <button id="beautyMode">💄 Beauty</button>
+      <button id="lightMakeup">💋 Light Makeup</button>
+      <button id="record">🎥 Record</button>
+      <button id="stop" disabled>⏹ Stop</button>
+
+      <label>⏱ Timer:
+        <select id="timer">
+          <option value="0">Off</option>
+          <option value="3">3s</option>
+          <option value="5">5s</option>
+          <option value="10">10s</option>
+        </select>
+      </label>
+
+      <label>⚡ Speed:
+        <select id="speed">
+          <option value="0.5">0.5x</option>
+          <option value="1" selected>1x</option>
+          <option value="1.5">1.5x</option>
+          <option value="2">2x</option>
+        </select>
+      </label>
+
+      <label>☀️ Brightness:
+        <input type="range" id="brightness" min="50" max="150" value="100">
+      </label>
+
+      <label>🎨 Filter:
+        <select id="filter">
+          <option value="none">No Filter</option>
+          <option value="grayscale(100%)">Grayscale</option>
+          <option value="sepia(70%)">Sepia</option>
+          <option value="contrast(140%)">High Contrast</option>
+          <option value="blur(2px)">Soft Blur</option>
+          <option value="invert(100%)">Invert Colors</option>
+        </select>
+      </label>
+
+      <a id="downloadLink" class="button-link" hidden download>📥 Download</a>
+    </section>
+
+    <section id="beauty-controls">
+      <label>Smoothness:
+        <input type="range" id="smoothness" min="0" max="5" step="0.1" value="0">
+      </label>
+      <label>Tone (Warmth):
+        <input type="range" id="tone" min="0" max="50" value="0">
+      </label>
+      <label>Saturation:
+        <input type="range" id="saturation" min="50" max="150" value="100">
+      </label>
+    </section>
+
+    <div id="status"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 Smart Camtin — Built with bommmack</p>
+  </footer>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const countdownEl = document.getElementById('countdown');
+    const recordingTimer = document.getElementById('recording-timer');
+
+    const captureBtn = document.getElementById('capture');
+    const flipBtn = document.getElementById('flip');
+    const portraitBtn = document.getElementById('portrait');
+    const trueBeautyBtn = document.getElementById('trueBeauty');
+    const beautyBtn = document.getElementById('beautyMode');
+    const lightMakeupBtn = document.getElementById('lightMakeup');
+    const recordBtn = document.getElementById('record');
+    const stopBtn = document.getElementById('stop');
+    const brightnessSlider = document.getElementById('brightness');
+    const filterSelect = document.getElementById('filter');
+    const timerSelect = document.getElementById('timer');
+    const speedSelect = document.getElementById('speed');
+    const downloadLink = document.getElementById('downloadLink');
+    const status = document.getElementById('status');
+    const beautyControls = document.getElementById('beauty-controls');
+    const smoothnessSlider = document.getElementById('smoothness');
+    const toneSlider = document.getElementById('tone');
+    const saturationSlider = document.getElementById('saturation');
+
+    let stream = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isFlipped = false;
+    let portraitMode = false;
+    let trueBeautyMode = false;
+    let beautyMode = false;
+    let lightMakeupMode = false;
+    let recordingStartTime = null;
+    let recordingTimerInterval = null;
+
+    async function startCamera() {
+      try {
+        if (stream) stream.getTracks().forEach(t => t.stop());
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: isFlipped ? "user" : "environment" },
+          audio: true
+        });
+        video.srcObject = stream;
+      } catch (err) {
+        alert("Camera access denied or unavailable.");
+        console.error(err);
+      }
+    }
+
+    function updateEffects() {
+      video.style.filter = `${filterSelect.value} brightness(${brightnessSlider.value}%)`;
+    }
+
+    captureBtn.addEventListener('click', () => {
+      canvas.hidden = false;
+      ctx.filter = video.style.filter;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = canvas.toDataURL('image/png');
+      downloadLink.href = imageData;
+      downloadLink.download = 'snapshot.png';
+      downloadLink.hidden = false;
+    });
+
+    flipBtn.addEventListener('click', startCamera);
+
+    portraitBtn.addEventListener('click', () => {
+      portraitMode = !portraitMode;
+      status.textContent = portraitMode ? "🌟 Portrait Mode ON" : "Portrait Mode OFF";
+    });
+
+    trueBeautyBtn.addEventListener('click', () => {
+      trueBeautyMode = !trueBeautyMode;
+      if (trueBeautyMode) {
+        video.style.filter = "brightness(105%) sepia(15%) contrast(110%) saturate(90%)";
+        showMessage("Natural is beautiful 💚");
+        trueBeautyBtn.textContent = "💚 True You (ON)";
+      } else {
+        updateEffects();
+        trueBeautyBtn.textContent = "💚 True You";
+      }
+    });
+
+    beautyBtn.addEventListener('click', () => {
+      beautyMode = !beautyMode;
+      beautyControls.style.display = beautyMode ? "block" : "none";
+      if (beautyMode) {
+        applyBeautyEffects();
+        showMessage("✨ Beauty Mode On – Adjust your look!");
+        beautyBtn.textContent = "💄 Beauty (ON)";
+      } else {
+        updateEffects();
+        beautyBtn.textContent = "💄 Beauty";
+      }
+    });
+
+    lightMakeupBtn.addEventListener('click', () => {
+      lightMakeupMode = !lightMakeupMode;
+      if (lightMakeupMode) {
+        video.style.filter = `
+          brightness(110%) 
+          contrast(110%) 
+          saturate(120%) 
+          sepia(10%) 
+          hue-rotate(-5deg) 
+          blur(0.5px)
+        `;
+        video.classList.add("video-glow");
+        showMessage("💋 Light Makeup Mode ON");
+        lightMakeupBtn.textContent = "💋 Light Makeup (ON)";
+      } else {
+        video.classList.remove("video-glow");
+        updateEffects();
+        lightMakeupBtn.textContent = "💋 Light Makeup";
+        showMessage("💋 Light Makeup Mode OFF");
+      }
+    });
+
+    function applyBeautyEffects() {
+      const smooth = smoothnessSlider.value;
+      const tone = toneSlider.value;
+      const sat = saturationSlider.value;
+      video.style.filter = `blur(${smooth}px) sepia(${tone}%) saturate(${sat}%) brightness(${brightnessSlider.value}%)`;
+    }
+
+    [smoothnessSlider, toneSlider, saturationSlider].forEach(slider =>
+      slider.addEventListener('input', applyBeautyEffects)
+    );
+
+    function showMessage(text) {
+      const msg = document.createElement("div");
+      msg.textContent = text;
+      Object.assign(msg.style, {
+        position: "fixed",
+        bottom: "20px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        fontSize: "18px",
+        background: "rgba(0,0,0,0.5)",
+        padding: "8px 14px",
+        borderRadius: "8px",
+        animation: "fadeOut 3s forwards",
+        zIndex: "999"
+      });
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 3000);
+    }
+
+    recordBtn.addEventListener('click', async () => {
+      const timer = parseInt(timerSelect.value);
+      if (timer > 0) await countdown(timer);
+      startRecording();
+    });
+
+    stopBtn.addEventListener('click', stopRecording);
+
+    async function countdown(seconds) {
+      countdownEl.textContent = seconds;
+      while (seconds > 0) {
+        await new Promise(r => setTimeout(r, 1000));
+        seconds--;
+        countdownEl.textContent = seconds > 0 ? seconds : "";
+      }
+    }
+
+    function startRecording() {
+      recordedChunks = [];
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      mediaRecorder.ondataavailable = e => e.data.size && recordedChunks.push(e.data);
+      mediaRecorder.onstop = saveVideo;
+      mediaRecorder.start();
+      recordBtn.disabled = true;
+      stopBtn.disabled = false;
+      status.textContent = "🔴 Recording...";
+
+      // Start timer
+      recordingStartTime = Date.now();
+      recordingTimerInterval = setInterval(updateRecordingTimer, 1000);
+      updateRecordingTimer();
+    }
+
+    function stopRecording() {
+      mediaRecorder.stop();
+      recordBtn.disabled = false;
+      stopBtn.disabled = true;
+      status.textContent = "Recording stopped.";
+
+      // Stop timer
+      clearInterval(recordingTimerInterval);
+      recordingTimer.textContent = "";
+    }
+
+    function updateRecordingTimer() {
+      const elapsed = Date.now() - recordingStartTime;
+      const totalSeconds = Math.floor(elapsed / 1000);
+      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      recordingTimer.textContent = `${minutes}:${seconds}`;
+    }
+
+    function saveVideo() {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const playback = document.createElement("video");
+      playback.src = url;
+      playback.controls = true;
+      playback.playbackRate = parseFloat(speedSelect.value);
+      playback.width = 480;
+      playback.style.marginTop = "20px";
+      playback.style.borderRadius = "12px";
+      document.body.appendChild(playback);
+      downloadLink.href = url;
+      downloadLink.download = 'recording.webm';
+      downloadLink.hidden = false;
+    }
+
+    filterSelect.addEventListener('change', updateEffects);
+    brightnessSlider.addEventListener('input', updateEffects);
+
+    startCamera();
+  </script>
+</body>
+</html>

@@ -1,79 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>📸 Smart Camtin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0078d7" />
-  <style>
-    :root{
-      --primary:#0078d7; --primary-dark:#005fa3; --bg:#111; --card:rgba(255,255,255,0.04);
-      --light-bg:#f7f7f7; --light-text:#111;
-    }
-    *{box-sizing:border-box;transition:background 0.3s,color 0.3s}
-    body{font-family:"Poppins",sans-serif;margin:0;background:linear-gradient(180deg,#151515,#2b2b2b);color:#fff;min-height:100vh}
-    body.light{background:linear-gradient(180deg,#fafafa,#dcdcdc);color:var(--light-text)}
-    nav{position:fixed;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);z-index:50}
-    body.light nav{background:rgba(255,255,255,0.7)}
-    nav h1{margin:0;font-size:18px;display:flex;gap:8px;align-items:center}
-    .nav-right{display:flex;align-items:center;gap:10px}
-    .btn{background:var(--primary);border:none;padding:8px 12px;border-radius:8px;color:#fff;cursor:pointer;transition:0.2s}
-    .btn:hover{background:var(--primary-dark)}
-    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.08)}
-    main{margin-top:80px;display:flex;flex-direction:column;align-items:center;padding:28px}
-    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.6);max-width:980px;width:100%}
-    body.light .card{background:rgba(255,255,255,0.9);box-shadow:0 4px 10px rgba(0,0,0,0.1)}
-    .auth-wrap{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
-    .auth-box{width:300px;padding:16px;border-radius:10px;background:rgba(255,255,255,0.02)}
-    body.light .auth-box{background:rgba(255,255,255,0.5)}
-    input{width:100%;padding:10px;margin:8px 0;border-radius:8px;border:1px solid rgba(255,255,255,0.07);background:transparent;color:#fff}
-    body.light input{color:#111;border-color:#ccc}
-    label{display:block;text-align:left;font-size:13px;margin-top:6px;opacity:0.9}
-    /* camera */
-    .camera-container{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:18px}
-    video,canvas{width:480px;height:360px;border-radius:12px;background:#000;box-shadow:0 8px 30px rgba(0,0,0,0.6)}
-    #controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px}
-    .small{font-size:13px;opacity:0.85}
-    footer{margin-top:22px;text-align:center;opacity:0.6}
-    @media(max-width:600px){video,canvas{width:320px;height:240px}}
-
-    /* filter buttons */
-    .filter-buttons{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
-    .filter-btn{padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;cursor:pointer;font-size:13px;transition:0.2s}
-    .filter-btn:hover{background:var(--primary-dark)}
-    .filter-btn.active{background:var(--primary);border-color:var(--primary-dark)}
-    body.light .filter-btn{color:#111;border-color:#ccc;background:#eee}
-
-    /* bokeh */
-    .bokeh-overlay {
-      position:absolute;width:100%;height:100%;top:0;left:0;pointer-events:none;overflow:hidden;z-index:5;
-    }
-    .bokeh-dot {
-      position:absolute;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,0.3), transparent 70%);animation:float 8s linear infinite;opacity:0.4;
-    }
-    @keyframes float {
-      from {transform:translateY(100vh);}
-      to {transform:translateY(-10vh);}
-    }
-
-    /* loader */
-    #loader{
-      position:fixed;top:0;left:0;width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;
-      color:#fff;z-index:999;font-size:18px;font-weight:600;letter-spacing:1px;
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>📸 Smart Camtin — Enhanced Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0078d7" />
+<style>
+:root {
+  --primary: #0078d7;
+  --primary-dark: #005fa3;
+  --bg-dark: #111;
+  --bg-light: #f7f7f7;
+  --card-dark: rgba(255,255,255,0.05);
+  --card-light: rgba(255,255,255,0.9);
+  --text-light: #fff;
+  --text-dark: #111;
+}
+*, *::before, *::after { box-sizing: border-box; transition: all 0.3s ease; }
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  background: linear-gradient(180deg, #151515, #2b2b2b);
+  color: var(--text-light);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body.light {
+  background: linear-gradient(180deg, #fafafa, #e2e2e2);
+  color: var(--text-dark);
+}
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+body.light nav { background: rgba(255,255,255,0.85); }
+nav h1 { margin:0; font-size:20px; display:flex; align-items:center; gap:8px; }
+.nav-right { display:flex; align-items:center; gap:12px; }
+.btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  background: var(--primary);
+  color: #fff;
+  transition: 0.2s ease;
+}
+.btn:hover { background: var(--primary-dark); }
+.btn.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: inherit; }
+main {
+  margin-top: 90px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:24px 12px;
+  gap:24px;
+}
+.card {
+  background: var(--card-dark);
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+  max-width: 720px;
+  width: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+body.light .card {
+  background: var(--card-light);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.6);
+}
+.auth-wrap { display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
+.auth-box {
+  background: rgba(255,255,255,0.03);
+  padding:20px;
+  border-radius:12px;
+  min-width:280px;
+  flex:1;
+  max-width:320px;
+  transition: background 0.3s ease;
+}
+body.light .auth-box { background: rgba(255,255,255,0.65); }
+.auth-box h3 { margin-top:0; margin-bottom:12px; font-weight:600; }
+label { display:block; font-size:13px; margin-top:10px; opacity:0.8; }
+input { width:100%; padding:10px 12px; margin-top:4px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:transparent; color:inherit; }
+body.light input { border-color:#ccc; color:#111; }
+.small { font-size:13px; opacity:0.75; }
+.profile-container { display:flex; align-items:center; gap:18px; margin-top:16px; }
+.profile-container img { width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); }
+.activity-feed { margin-top:20px; max-height:200px; overflow-y:auto; border-top:1px solid rgba(255,255,255,0.2); padding-top:12px; }
+.activity-item { padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.1); font-size:14px; opacity:0.85; }
+.chat-card { margin-top:20px; display:flex; flex-direction:column; max-height:350px; }
+.messages { flex:1; overflow-y:auto; padding:10px; border:1px solid rgba(255,255,255,0.2); border-radius:10px; background:rgba(0,0,0,0.1); margin-bottom:6px; }
+.message { display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; }
+.message img { width:30px; height:30px; border-radius:50%; object-fit:cover; }
+.message .content { background: rgba(0,0,0,0.2); padding:6px 10px; border-radius:10px; max-width:80%; word-wrap:break-word; }
+body.light .messages .message .content { background: rgba(255,255,255,0.5); }
+input.chat-input { flex:1; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:transparent; color:inherit; }
+body.light input.chat-input { border-color:#ccc; color:#111; }
+.chat-controls { display:flex; gap:8px; }
+#typing-indicator { font-size:12px; margin-bottom:4px; opacity:0.7; min-height:16px; }
+footer { margin-top:32px; text-align:center; opacity:0.6; font-size:13px; }
+#loader { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:600; background: var(--bg-dark); color: var(--text-light); z-index:999; }
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--primary); color:#fff; padding:10px 20px; border-radius:10px; opacity:0; transition:0.5s ease; pointer-events:none; z-index:9999; }
+.toast.show { opacity:1; pointer-events:auto; }
+.password-toggle { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:inherit; }
+.skeleton { background: linear-gradient(-90deg, #ddd 0%, #eee 50%, #ddd 100%); background-size: 400% 400%; animation: shimmer 1.4s ease infinite; border-radius:8px; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+@media (max-width:650px) { .auth-wrap { flex-direction:column; gap:16px; } .profile-container { flex-direction:column; gap:12px; } nav h1 { font-size:18px; } }
+</style>
 </head>
 <body>
-
 <div id="loader">🚀 Loading Smart Camtin...</div>
+<div id="toast" class="toast"></div>
 
 <nav>
   <h1>📸 Smart Camtin</h1>
   <div class="nav-right">
     <button id="mode-toggle" class="btn secondary" title="Toggle Light/Dark">🌙</button>
-    <div id="user-area" style="display:none;align-items:center;">
+    <div id="user-area" style="display:none;align-items:center; gap:8px;">
       <div id="user-name" class="small">Hi, user</div>
       <button id="signout" class="btn">Sign out</button>
     </div>
@@ -84,171 +140,146 @@
 </nav>
 
 <main>
-  <!-- AUTH -->
-  <div id="auth-card" class="card" style="max-width:720px;margin-bottom:16px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
+  <!-- AUTH CARD -->
+  <div id="auth-card" class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center; flex-wrap:wrap;">
       <div>
         <h2 style="margin:0 0 6px 0">Welcome to Smart Camtin</h2>
-        <div class="small">Create an account or sign in to access camera features.</div>
+        <div class="small">Create an account or sign in to access your dashboard.</div>
       </div>
       <div id="auth-status" class="small">Not signed in</div>
     </div>
-    <div style="margin-top:14px;" id="auth-ui">
-      <div class="auth-wrap">
-        <div class="auth-box">
-          <h3>Sign up (email)</h3>
-          <label>Email</label><input id="su-email" type="email" placeholder="you@example.com" />
-          <label>Password</label><input id="su-pass" type="password" placeholder="Enter password" />
-          <button id="btn-signup" class="btn" style="width:100%;margin-top:8px">Create Account</button>
-        </div>
-        <div class="auth-box">
-          <h3>Sign in</h3>
-          <label>Email</label><input id="si-email" type="email" placeholder="you@example.com" />
-          <label>Password</label><input id="si-pass" type="password" placeholder="Password" />
-          <button id="btn-signin" class="btn" style="width:100%;margin-top:8px">Sign In</button>
-          <div style="margin-top:8px"><button id="btn-google" class="btn secondary" style="width:100%;">Sign in with Google</button></div>
-        </div>
+    <div class="auth-wrap" style="margin-top:20px;">
+      <div class="auth-box">
+        <h3>Sign up</h3>
+        <label>Email</label><input id="su-email" type="email" placeholder="you@example.com">
+        <label>Password</label>
+        <div style="position:relative;"><input id="su-pass" type="password" placeholder="Enter password"><button type="button" class="password-toggle" onclick="togglePassword('su-pass')">👁️</button></div>
+        <button id="btn-signup" class="btn" style="width:100%; margin-top:12px;">Create Account</button>
+      </div>
+      <div class="auth-box">
+        <h3>Sign in</h3>
+        <label>Email</label><input id="si-email" type="email" placeholder="you@example.com">
+        <label>Password</label>
+        <div style="position:relative;"><input id="si-pass" type="password" placeholder="Password"><button type="button" class="password-toggle" onclick="togglePassword('si-pass')">👁️</button></div>
+        <label><input type="checkbox" id="remember-me"> Remember Me</label>
+        <button id="btn-signin" class="btn" style="width:100%; margin-top:12px;">Sign In</button>
+        <button id="btn-google" class="btn secondary" style="width:100%; margin-top:10px;">Sign in with Google</button>
+        <button id="reset-pass" class="btn secondary" style="width:100%; margin-top:10px;">Reset Password</button>
       </div>
     </div>
   </div>
 
-  <!-- CAMERA -->
-  <div id="app" class="card" style="display:none; position:relative;">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <div><h2 style="margin:0">Camera</h2><div class="small">Capture photos — with beauty & filter presets</div></div>
-      <div id="profile-info" style="text-align:right"><div id="profile-email" class="small"></div></div>
-    </div>
-
-    <div class="camera-container">
-      <div class="bokeh-overlay" id="bokeh-overlay" style="display:none;"></div>
-      <video id="video" autoplay playsinline></video>
-      <canvas id="canvas" width="480" height="360" hidden></canvas>
-
-      <div id="controls">
-        <button id="capture" class="btn">📷 Capture</button>
-        <button id="flip" class="btn secondary">🔁 Flip</button>
-        <button id="toggle-beauty" class="btn">💄 Beauty</button>
-        <a id="downloadLink" class="btn" download style="display:none;">📥 Download</a>
-      </div>
-
-      <div id="beauty-controls" style="display:none;margin-top:10px;width:480px;text-align:left;">
-        <label>Smoothness: <input id="smooth" type="range" min="0" max="5" step="0.1" value="0"></label>
-        <label>Tone: <input id="tone" type="range" min="0" max="50" value="0"></label>
-        <label>Saturation: <input id="sat" type="range" min="50" max="150" value="100"></label>
-        <div class="filter-buttons">
-          <button class="filter-btn" data-filter="none">None</button>
-          <button class="filter-btn" data-filter="warm">Warm</button>
-          <button class="filter-btn" data-filter="cool">Cool</button>
-          <button class="filter-btn" data-filter="vintage">Vintage</button>
-          <button class="filter-btn" data-filter="bw">B&W</button>
-          <button class="filter-btn" data-filter="bright">Bright</button>
-          <button class="filter-btn" data-filter="bokeh">Bokeh</button>
-        </div>
-        <label style="display:block;margin-top:8px;">
-          <input type="checkbox" id="auto-bright" /> Auto Brightness Correction
-        </label>
+  <!-- Dashboard -->
+  <div id="app" class="card" style="display:none;">
+    <h2>Dashboard</h2>
+    <div class="profile-container">
+      <img id="profile-pic" src="" alt="Profile Avatar">
+      <div>
+        <label>Display Name</label>
+        <input id="update-name" type="text" placeholder="Your Name">
+        <button id="update-profile" class="btn" style="margin-top:8px;">Update Profile</button>
+        <p class="small">Email: <span id="profile-email"></span></p>
       </div>
     </div>
+
+    <!-- Recent Activity -->
+    <div class="card" style="margin-top:20px;">
+      <h3>📝 Recent Activity</h3>
+      <div id="activity-feed" class="activity-feed"><div class="activity-item skeleton">Loading activities...</div></div>
+    </div>
+
+    <!-- Chat -->
+    <div class="card chat-card">
+      <h3>💬 Chat</h3>
+      <div id="messages" class="messages">
+        <div class="skeleton">Loading messages...</div>
+      </div>
+      <div id="typing-indicator">&nbsp;</div>
+      <div class="chat-controls">
+        <input id="chat-input" class="chat-input" placeholder="Type a message...">
+        <button id="emoji-btn" class="btn secondary">😊</button>
+        <button id="send-msg" class="btn">Send</button>
+      </div>
+    </div>
+
+    <p style="margin-top:12px;">🎉 You are signed in successfully!</p>
+    <p class="small">Version: v1.0.4</p>
   </div>
 
-  <footer><div class="small">© 2025 Smart Camtin — Bommmack</div></footer>
+  <footer>© 2025 Smart Camtin — Bommmack</footer>
 </main>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-  import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-  const firebaseConfig={apiKey:"AIzaSyDwT1JTnw6rqyTaO1sbZXD624_HblKMPZM",authDomain:"smartcamtin-a7e07.firebaseapp.com",projectId:"smartcamtin-a7e07",appId:"1:397311969979:web:d08a7a063ba1683e16f79e"};
-  const app=initializeApp(firebaseConfig);
-  const auth=getAuth(app);
+const firebaseConfig = { apiKey:"AIzaSyDwT1JTnw6rqyTaO1sbZXD624_HblKMPZM", authDomain:"smartcamtin-a7e07.firebaseapp.com", projectId:"smartcamtin-a7e07", appId:"1:397311969979:web:d08a7a063ba1683e16f79e" };
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  const $=id=>document.getElementById(id);
-  const authCard=$('auth-card'),authStatus=$('auth-status'),appCard=$('app'),signoutBtn=$('signout'),userArea=$('user-area'),authButtons=$('auth-buttons'),openAuthBtn=$('open-auth'),userNameEl=$('user-name'),profileEmail=$('profile-email');
-  const suEmail=$('su-email'),suPass=$('su-pass'),siEmail=$('si-email'),siPass=$('si-pass'),btnSignup=$('btn-signup'),btnSignin=$('btn-signin'),btnGoogle=$('btn-google');
-  const video=$('video'),canvas=$('canvas'),captureBtn=$('capture'),flipBtn=$('flip'),toggleBeauty=$('toggle-beauty'),downloadLink=$('downloadLink'),beautyControls=$('beauty-controls'),smooth=$('smooth'),tone=$('tone'),sat=$('sat'),autoBright=$('auto-bright'),bokehOverlay=$('bokeh-overlay'),loader=$('loader'),modeToggle=$('mode-toggle');
-  const filterBtns=document.querySelectorAll('.filter-btn');
-  let stream=null,isFlipped=false,beautyOn=false,currentFilter="none";
+const $ = id => document.getElementById(id);
+const authCard = $('auth-card'), appCard = $('app'), authStatus = $('auth-status');
+const signoutBtn = $('signout'), userArea = $('user-area'), authButtons = $('auth-buttons'), openAuthBtn = $('open-auth');
+const userNameEl = $('user-name'), profileEmail = $('profile-email'), profilePic = $('profile-pic');
+const suEmail = $('su-email'), suPass = $('su-pass'), siEmail = $('si-email'), siPass = $('si-pass');
+const btnSignup = $('btn-signup'), btnSignin = $('btn-signin'), btnGoogle = $('btn-google');
+const modeToggle = $('mode-toggle'), loader = $('loader'), toast = $('toast');
+const rememberMe = $('remember-me'), resetPassBtn = $('reset-pass');
+const updateName = $('update-name'), updateProfileBtn = $('update-profile');
+const activityFeed = $('activity-feed');
+const messagesEl = $('messages'), chatInput = $('chat-input'), sendMsgBtn = $('send-msg'), emojiBtn = $('emoji-btn'), typingIndicator=$('typing-indicator');
 
-  window.addEventListener('load',()=>setTimeout(()=>loader.style.display='none',700));
+function showToast(msg){ toast.textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2500); }
+function togglePassword(id){ const input=$(id); input.type=input.type==='password'?'text':'password'; }
+window.addEventListener('load', ()=>setTimeout(()=>loader.style.display='none',700));
 
-  // Dark/Light toggle
-  modeToggle.onclick=()=>{
-    document.body.classList.toggle('light');
-    modeToggle.textContent=document.body.classList.contains('light')?'🌞':'🌙';
-    localStorage.setItem('theme',document.body.classList.contains('light')?'light':'dark');
-  };
-  if(localStorage.getItem('theme')==='light'){document.body.classList.add('light');modeToggle.textContent='🌞';}
+modeToggle.onclick=()=>{ document.body.classList.toggle('light'); modeToggle.textContent=document.body.classList.contains('light')?'🌞':'🌙'; localStorage.setItem('theme',document.body.classList.contains('light')?'light':'dark'); };
+if(localStorage.getItem('theme')==='light'){ document.body.classList.add('light'); modeToggle.textContent='🌞'; }
 
-  function notifyAuth(t){authStatus.textContent=t;}
-  btnSignup.onclick=async()=>{try{await createUserWithEmailAndPassword(auth,suEmail.value,suPass.value);alert("✅ Account created!");}
-    catch(e){alert("⚠️ "+e.message);}}
-  btnSignin.onclick=async()=>{try{await signInWithEmailAndPassword(auth,siEmail.value,siPass.value);alert("✅ Signed in!");}
-    catch(e){alert("⚠️ "+e.message);}}
-  btnGoogle.onclick=async()=>{try{await signInWithPopup(auth,new GoogleAuthProvider());alert("✅ Google sign-in success!");}
-    catch(e){alert("⚠️ "+e.message);}}
-  signoutBtn.onclick=()=>signOut(auth);
+btnSignup.onclick=async()=>{ try{ await createUserWithEmailAndPassword(auth,suEmail.value,suPass.value); showToast("✅ Account created!"); logActivity("Signed up with email"); }catch(e){ showToast("⚠️ "+e.message); } };
+btnSignin.onclick=async()=>{ try{ await signInWithEmailAndPassword(auth,siEmail.value,siPass.value); showToast("✅ Signed in!"); logActivity("Signed in with email"); if(rememberMe.checked)localStorage.setItem('rememberedEmail',siEmail.value); else localStorage.removeItem('rememberedEmail'); }catch(e){ showToast("⚠️ "+e.message); } };
+btnGoogle.onclick=async()=>{ try{ await signInWithPopup(auth,new GoogleAuthProvider()); showToast("✅ Google sign-in success!"); logActivity("Signed in with Google"); }catch(e){ showToast("⚠️ "+e.message); } };
+signoutBtn.onclick=()=>signOut(auth);
+openAuthBtn.onclick=()=>authCard.style.display=authCard.style.display==='none'?'block':'none';
+resetPassBtn.onclick=async()=>{ if(!siEmail.value){ showToast("⚠️ Enter your email"); return; } try{ await sendPasswordResetEmail(auth,siEmail.value); showToast("✅ Reset email sent!"); logActivity("Requested password reset"); }catch(e){ showToast("⚠️ "+e.message); } };
+updateProfileBtn.onclick=async()=>{ try{ await updateProfile(auth.currentUser,{displayName:updateName.value}); showToast("✅ Profile updated!"); logActivity("Updated profile"); onAuthStateChanged(auth,auth.currentUser); }catch(e){ showToast("⚠️ "+e.message); } };
+if(localStorage.getItem('rememberedEmail')) siEmail.value = localStorage.getItem('rememberedEmail');
 
-  openAuthBtn.onclick=()=>authCard.style.display=authCard.style.display==='none'?'block':'none';
+function notifyAuth(t){ authStatus.textContent=t; }
+async function logActivity(action){ const user=auth.currentUser; if(!user)return; try{ await addDoc(collection(db,"activity"),{ uid:user.uid, action,email:user.email,timestamp:serverTimestamp() }); }catch(e){ console.error("Activity log error:",e); } }
+function loadActivity(uid){ const q=query(collection(db,"activity"),orderBy("timestamp","desc"),limit(10)); onSnapshot(q,snapshot=>{ activityFeed.innerHTML=""; snapshot.forEach(doc=>{ const data=doc.data(); const item=document.createElement("div"); item.className="activity-item"; item.textContent=`[${new Date(data.timestamp?.toDate()).toLocaleTimeString()}] ${data.action}`; activityFeed.appendChild(item); }); }); }
 
-  onAuthStateChanged(auth,u=>{
-    if(u){notifyAuth("Signed in");authCard.style.display='none';appCard.style.display='block';userArea.style.display='flex';
-      authButtons.style.display='none';userNameEl.textContent=u.displayName||u.email;profileEmail.textContent=u.email;startCamera();}
-    else{notifyAuth("Not signed in");authCard.style.display='block';appCard.style.display='none';userArea.style.display='none';
-      authButtons.style.display='block';stopCamera();}
-  });
+async function loadMessages(){ const q=query(collection(db,"messages"),orderBy("timestamp","asc"),limit(100)); onSnapshot(q,snapshot=>{ messagesEl.innerHTML=""; snapshot.docChanges().forEach(change=>{ const data=change.doc.data(); if(change.type==='added'){ const msgDiv=document.createElement("div"); msgDiv.className="message"; msgDiv.innerHTML=`<img src="${data.avatarURL}" alt="avatar"><div class="content"><strong>${data.name}:</strong> ${data.message}</div>`; messagesEl.appendChild(msgDiv); if(auth.currentUser && data.uid!==auth.currentUser.uid) showToast(`📨 New message from ${data.name}`); } }); messagesEl.scrollTop=messagesEl.scrollHeight; }); }
 
-  async function startCamera(){
-    try{if(stream)stream.getTracks().forEach(t=>t.stop());
-      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:isFlipped?'user':'environment'},audio:false});
-      video.srcObject=stream;
-    }catch(e){alert("Camera error:"+e.message);}
+sendMsgBtn.onclick=async()=>{ const msg=chatInput.value.trim(); if(!msg){ showToast("⚠️ Enter a message"); return; } try{ const user=auth.currentUser; await addDoc(collection(db,"messages"),{ uid:user.uid, name:user.displayName||user.email, avatarURL:user.photoURL||`https://ui-avatars.com/api/?name=${(user.displayName||user.email).split(" ").map(n=>n[0]).join("")}&background=0078d7&color=fff&size=100`, message:msg, timestamp:serverTimestamp() }); chatInput.value=""; }catch(e){ showToast("⚠️ "+e.message); } }
+
+chatInput.addEventListener('input',async()=>{ const user=auth.currentUser; if(!user) return; const typingRef=doc(db,'typing',user.uid); await setDoc(typingRef,{ name:user.displayName||user.email, isTyping:true, timestamp:serverTimestamp() }); clearTimeout(window.typingTimeout); window.typingTimeout=setTimeout(async()=>{ await setDoc(typingRef,{ name:user.displayName||user.email, isTyping:false, timestamp:serverTimestamp() }); },2000); });
+
+const typingCol=collection(db,'typing');
+onSnapshot(typingCol,snapshot=>{ let typingUsers=[]; snapshot.forEach(doc=>{ const data=doc.data(); if(data.isTyping && auth.currentUser.uid!==doc.id) typingUsers.push(data.name); }); typingIndicator.textContent=typingUsers.length>0?typingUsers.join(', ')+' is typing...':''; });
+
+emojiBtn.onclick=()=>{ const emoji=prompt("Enter an emoji:"); if(emoji) chatInput.value+=emoji; };
+
+onAuthStateChanged(auth,user=>{
+  if(user){
+    notifyAuth("Signed in");
+    authCard.style.display='none'; appCard.style.display='block';
+    userArea.style.display='flex'; authButtons.style.display='none';
+    userNameEl.textContent=user.displayName||user.email;
+    profileEmail.textContent=user.email;
+    profilePic.src=user.photoURL||`https://ui-avatars.com/api/?name=${(user.displayName||user.email).split(" ").map(n=>n[0]).join("")}&background=0078d7&color=fff&size=100`;
+    updateName.value=user.displayName||"";
+    loadActivity(user.uid);
+    loadMessages();
+  } else {
+    notifyAuth("Not signed in");
+    authCard.style.display='block'; appCard.style.display='none';
+    userArea.style.display='none'; authButtons.style.display='flex';
   }
-  function stopCamera(){if(stream)stream.getTracks().forEach(t=>t.stop());video.srcObject=null;}
-
-  captureBtn.onclick=()=>{
-    canvas.hidden=false;
-    canvas.width=video.videoWidth;canvas.height=video.videoHeight;
-    const ctx=canvas.getContext('2d');ctx.filter=video.style.filter;ctx.drawImage(video,0,0,canvas.width,canvas.height);
-    downloadLink.href=canvas.toDataURL('image/png');downloadLink.download=`smart-camtin-${Date.now()}.png`;
-    downloadLink.style.display='inline-block';
-  };
-  flipBtn.onclick=()=>{isFlipped=!isFlipped;startCamera();};
-  toggleBeauty.onclick=()=>{beautyOn=!beautyOn;beautyControls.style.display=beautyOn?'block':'none';applyBeauty();};
-
-  function applyBeauty(){
-    if(!beautyOn){video.style.filter='none';bokehOverlay.style.display='none';return;}
-    const s=smooth.value,t=tone.value,sa=sat.value;
-    let filter=`blur(${s}px) sepia(${t}%) saturate(${sa}%)`;
-    if(autoBright.checked)filter+=` brightness(1.1) contrast(1.05)`;
-    switch(currentFilter){
-      case'warm':filter+=` hue-rotate(-10deg) contrast(1.1)`;break;
-      case'cool':filter+=` hue-rotate(20deg) saturate(1.2)`;break;
-      case'vintage':filter+=` sepia(0.4) contrast(1.1)`;break;
-      case'bw':filter+=` grayscale(1) contrast(1.2)`;break;
-      case'bright':filter+=` brightness(1.3) contrast(1.15)`;break;
-      case'bokeh':filter+=` blur(6px) brightness(1.2) saturate(1.3)`;bokehOverlay.style.display='block';spawnBokeh();break;
-      default:bokehOverlay.style.display='none';
-    }
-    video.style.filter=filter;
-  }
-  function spawnBokeh(){
-    bokehOverlay.innerHTML='';
-    for(let i=0;i<15;i++){
-      const dot=document.createElement('div');
-      dot.className='bokeh-dot';
-      dot.style.width=dot.style.height=(Math.random()*60+20)+'px';
-      dot.style.left=(Math.random()*100)+'%';
-      dot.style.animationDuration=(6+Math.random()*4)+'s';
-      dot.style.background=`radial-gradient(circle, rgba(${150+Math.random()*100},${150+Math.random()*100},255,0.4), transparent 70%)`;
-      bokehOverlay.appendChild(dot);
-    }
-  }
-  [smooth,tone,sat,autoBright].forEach(e=>e.addEventListener('input',applyBeauty));
-  filterBtns.forEach(btn=>{
-    btn.onclick=()=>{filterBtns.forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilter=btn.dataset.filter;applyBeauty();};
-  });
-  document.addEventListener('DOMContentLoaded',()=>authButtons.style.display='flex');
+});
 </script>
 </body>
 </html>
-

@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>📸 Smart Camtin — Enhanced Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-<meta name="theme-color" content="#0078d7" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0078d7">
 <style>
 :root {
   --primary: #0078d7;
@@ -17,7 +17,7 @@
   --text-light: #fff;
   --text-dark: #111;
 }
-*, *::before, *::after { box-sizing: border-box; transition: all 0.3s ease; }
+*, *::before, *::after { box-sizing: border-box; transition: all 0.22s ease; }
 body {
   font-family: "Poppins", sans-serif;
   margin: 0;
@@ -41,7 +41,7 @@ nav {
   backdrop-filter: blur(8px);
   z-index: 100;
 }
-body.light nav { background: rgba(255,255,255,0.85); }
+body.light nav { background: rgba(255,255,255,0.9); }
 nav h1 { margin:0; font-size:20px; display:flex; align-items:center; gap:8px; }
 .nav-right { display:flex; align-items:center; gap:12px; }
 .btn {
@@ -52,10 +52,10 @@ nav h1 { margin:0; font-size:20px; display:flex; align-items:center; gap:8px; }
   font-weight: 500;
   background: var(--primary);
   color: #fff;
-  transition: 0.2s ease;
+  transition: 0.18s ease;
 }
-.btn:hover { background: var(--primary-dark); }
-.btn.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: inherit; }
+.btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.12); color: inherit; }
 main {
   margin-top: 90px;
   display:flex;
@@ -69,17 +69,12 @@ main {
   padding: 24px;
   border-radius: 14px;
   box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-  max-width: 720px;
+  max-width: 900px;
   width: 100%;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 body.light .card {
   background: var(--card-light);
   box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-}
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 28px rgba(0,0,0,0.6);
 }
 .auth-wrap { display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
 .auth-box {
@@ -88,8 +83,7 @@ body.light .card {
   border-radius:12px;
   min-width:280px;
   flex:1;
-  max-width:320px;
-  transition: background 0.3s ease;
+  max-width:360px;
 }
 body.light .auth-box { background: rgba(255,255,255,0.65); }
 .auth-box h3 { margin-top:0; margin-bottom:12px; font-weight:600; }
@@ -99,26 +93,27 @@ body.light input { border-color:#ccc; color:#111; }
 .small { font-size:13px; opacity:0.75; }
 .profile-container { display:flex; align-items:center; gap:18px; margin-top:16px; }
 .profile-container img { width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); }
-.activity-feed { margin-top:20px; max-height:200px; overflow-y:auto; border-top:1px solid rgba(255,255,255,0.2); padding-top:12px; }
-.activity-item { padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.1); font-size:14px; opacity:0.85; }
-.chat-card { margin-top:20px; display:flex; flex-direction:column; max-height:350px; }
-.messages { flex:1; overflow-y:auto; padding:10px; border:1px solid rgba(255,255,255,0.2); border-radius:10px; background:rgba(0,0,0,0.1); margin-bottom:6px; }
-.message { display:flex; align-items:flex-start; gap:8px; margin-bottom:6px; }
-.message img { width:30px; height:30px; border-radius:50%; object-fit:cover; }
-.message .content { background: rgba(0,0,0,0.2); padding:6px 10px; border-radius:10px; max-width:80%; word-wrap:break-word; }
-body.light .messages .message .content { background: rgba(255,255,255,0.5); }
-input.chat-input { flex:1; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:transparent; color:inherit; }
+.activity-feed { margin-top:20px; max-height:200px; overflow-y:auto; border-top:1px solid rgba(255,255,255,0.12); padding-top:12px; }
+.activity-item { padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:14px; opacity:0.85; }
+.chat-card { margin-top:20px; display:flex; flex-direction:column; max-height:520px; }
+.messages { flex:1; overflow-y:auto; padding:10px; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:rgba(0,0,0,0.08); margin-bottom:6px; min-height:180px; }
+.message { display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; }
+.message .meta { font-size:12px; opacity:0.7; margin-bottom:4px; }
+.message img { width:36px; height:36px; border-radius:50%; object-fit:cover; }
+.message .content { background: rgba(0,0,0,0.18); padding:8px 12px; border-radius:10px; max-width:78%; word-wrap:break-word; }
+body.light .messages .message .content { background: rgba(255,255,255,0.6); }
+input.chat-input { flex:1; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); background:transparent; color:inherit; }
 body.light input.chat-input { border-color:#ccc; color:#111; }
-.chat-controls { display:flex; gap:8px; }
-#typing-indicator { font-size:12px; margin-bottom:4px; opacity:0.7; min-height:16px; }
-footer { margin-top:32px; text-align:center; opacity:0.6; font-size:13px; }
+.chat-controls { display:flex; gap:8px; align-items:center; }
+#typing-indicator { font-size:13px; margin-bottom:6px; opacity:0.8; min-height:18px; }
+.footer-row { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:12px; }
 #loader { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:600; background: var(--bg-dark); color: var(--text-light); z-index:999; }
 .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--primary); color:#fff; padding:10px 20px; border-radius:10px; opacity:0; transition:0.5s ease; pointer-events:none; z-index:9999; }
 .toast.show { opacity:1; pointer-events:auto; }
 .password-toggle { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:inherit; }
 .skeleton { background: linear-gradient(-90deg, #ddd 0%, #eee 50%, #ddd 100%); background-size: 400% 400%; animation: shimmer 1.4s ease infinite; border-radius:8px; }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-@media (max-width:650px) { .auth-wrap { flex-direction:column; gap:16px; } .profile-container { flex-direction:column; gap:12px; } nav h1 { font-size:18px; } }
+@media (max-width:820px) { .auth-wrap { flex-direction:column; gap:16px; } .profile-container { flex-direction:column; gap:12px; } nav h1 { font-size:18px; } .card { padding:16px; } }
 </style>
 </head>
 <body>
@@ -162,7 +157,7 @@ footer { margin-top:32px; text-align:center; opacity:0.6; font-size:13px; }
         <label>Email</label><input id="si-email" type="email" placeholder="you@example.com">
         <label>Password</label>
         <div style="position:relative;"><input id="si-pass" type="password" placeholder="Password"><button type="button" class="password-toggle" onclick="togglePassword('si-pass')">👁️</button></div>
-        <label><input type="checkbox" id="remember-me"> Remember Me</label>
+        <label style="margin-top:8px;"><input type="checkbox" id="remember-me"> Remember Me</label>
         <button id="btn-signin" class="btn" style="width:100%; margin-top:12px;">Sign In</button>
         <button id="btn-google" class="btn secondary" style="width:100%; margin-top:10px;">Sign in with Google</button>
         <button id="reset-pass" class="btn secondary" style="width:100%; margin-top:10px;">Reset Password</button>
@@ -174,8 +169,8 @@ footer { margin-top:32px; text-align:center; opacity:0.6; font-size:13px; }
   <div id="app" class="card" style="display:none;">
     <h2>Dashboard</h2>
     <div class="profile-container">
-      <img id="profile-pic" src="" alt="Profile Avatar">
-      <div>
+      <img id="profile-pic" src="https://res.cloudinary.com/smartcamtin1/image/fetch/f_auto,q_auto/https://smartcamtin1.netlify.app/?_a=BBFAAAAA0" alt="Profile Avatar" loading="lazy">
+      <div style="flex:1;">
         <label>Display Name</label>
         <input id="update-name" type="text" placeholder="Your Name">
         <button id="update-profile" class="btn" style="margin-top:8px;">Update Profile</button>
@@ -191,35 +186,71 @@ footer { margin-top:32px; text-align:center; opacity:0.6; font-size:13px; }
 
     <!-- Chat -->
     <div class="card chat-card">
-      <h3>💬 Chat</h3>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3>💬 Chat</h3>
+        <div id="online-count" class="small">0 online</div>
+      </div>
+
       <div id="messages" class="messages">
         <div class="skeleton">Loading messages...</div>
       </div>
+
       <div id="typing-indicator">&nbsp;</div>
-      <div class="chat-controls">
+
+      <div class="chat-controls" style="position:relative;">
         <input id="chat-input" class="chat-input" placeholder="Type a message...">
         <button id="emoji-btn" class="btn secondary">😊</button>
+        <button id="upload-btn" class="btn secondary" title="Send Image">📷</button>
+        <input id="image-upload" type="file" accept="image/*" style="display:none;">
         <button id="send-msg" class="btn">Send</button>
       </div>
+
+      <div id="suggestions" class="small" style="margin-top:8px; color:var(--primary);"></div>
     </div>
 
-    <p style="margin-top:12px;">🎉 You are signed in successfully!</p>
-    <p class="small">Version: v1.0.4</p>
+    <div class="footer-row">
+      <p style="margin:0;">🎉 You are signed in successfully!</p>
+      <p class="small">Version: v1.0.4</p>
+    </div>
   </div>
 
   <footer>© 2025 Smart Camtin — Bommmack</footer>
 </main>
 
+<!-- emoji-picker element -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.21.0/index.min.js"></script>
+
 <script type="module">
+/* ===========================
+   Firebase & app initialization
+   =========================== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getDatabase, ref as rdbRef, set as rdbSet, onDisconnect, onValue as rdbOnValue, serverTimestamp as rdbServerTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
-const firebaseConfig = { apiKey:"AIzaSyDwT1JTnw6rqyTaO1sbZXD624_HblKMPZM", authDomain:"smartcamtin-a7e07.firebaseapp.com", projectId:"smartcamtin-a7e07", appId:"1:397311969979:web:d08a7a063ba1683e16f79e" };
+const firebaseConfig = {
+  apiKey:"AIzaSyDwT1JTnw6rqyTaO1sbZXD624_HblKMPZM",
+  authDomain:"smartcamtin-a7e07.firebaseapp.com",
+  projectId:"smartcamtin-a7e07",
+  appId:"1:397311969979:web:d08a7a063ba1683e16f79e"
+};
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const rdb = getDatabase(app);
+const storage = getStorage(app);
 
+/* enable offline persistence for Firestore */
+enableIndexedDbPersistence(db).catch(err => {
+  console.warn("Persistence error:", err.code || err);
+});
+
+/* ===========================
+   DOM helpers & elements
+   =========================== */
 const $ = id => document.getElementById(id);
 const authCard = $('auth-card'), appCard = $('app'), authStatus = $('auth-status');
 const signoutBtn = $('signout'), userArea = $('user-area'), authButtons = $('auth-buttons'), openAuthBtn = $('open-auth');
@@ -230,56 +261,353 @@ const modeToggle = $('mode-toggle'), loader = $('loader'), toast = $('toast');
 const rememberMe = $('remember-me'), resetPassBtn = $('reset-pass');
 const updateName = $('update-name'), updateProfileBtn = $('update-profile');
 const activityFeed = $('activity-feed');
-const messagesEl = $('messages'), chatInput = $('chat-input'), sendMsgBtn = $('send-msg'), emojiBtn = $('emoji-btn'), typingIndicator=$('typing-indicator');
+const messagesEl = $('messages'), chatInput = $('chat-input'), sendMsgBtn = $('send-msg'), emojiBtn = $('emoji-btn'), typingIndicator = $('typing-indicator');
+const uploadBtn = $('upload-btn'), imageUpload = $('image-upload'), suggestionsEl = $('suggestions'), onlineCountEl = $('online-count');
 
-function showToast(msg){ toast.textContent=msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'),2500); }
-function togglePassword(id){ const input=$(id); input.type=input.type==='password'?'text':'password'; }
+function showToast(msg){ toast.textContent = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 2500); }
+function togglePassword(id){ const input=$(id); input.type = input.type==='password' ? 'text' : 'password'; }
 window.addEventListener('load', ()=>setTimeout(()=>loader.style.display='none',700));
 
-modeToggle.onclick=()=>{ document.body.classList.toggle('light'); modeToggle.textContent=document.body.classList.contains('light')?'🌞':'🌙'; localStorage.setItem('theme',document.body.classList.contains('light')?'light':'dark'); };
+/* ===========================
+   Theme (system auto + toggle)
+   =========================== */
+const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+if(!localStorage.getItem('theme') && prefersLight) { document.body.classList.add('light'); modeToggle.textContent = '🌞'; }
 if(localStorage.getItem('theme')==='light'){ document.body.classList.add('light'); modeToggle.textContent='🌞'; }
+modeToggle.onclick = () => {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  modeToggle.textContent = isLight ? '🌞' : '🌙';
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+};
 
-btnSignup.onclick=async()=>{ try{ await createUserWithEmailAndPassword(auth,suEmail.value,suPass.value); showToast("✅ Account created!"); logActivity("Signed up with email"); }catch(e){ showToast("⚠️ "+e.message); } };
-btnSignin.onclick=async()=>{ try{ await signInWithEmailAndPassword(auth,siEmail.value,siPass.value); showToast("✅ Signed in!"); logActivity("Signed in with email"); if(rememberMe.checked)localStorage.setItem('rememberedEmail',siEmail.value); else localStorage.removeItem('rememberedEmail'); }catch(e){ showToast("⚠️ "+e.message); } };
-btnGoogle.onclick=async()=>{ try{ await signInWithPopup(auth,new GoogleAuthProvider()); showToast("✅ Google sign-in success!"); logActivity("Signed in with Google"); }catch(e){ showToast("⚠️ "+e.message); } };
-signoutBtn.onclick=()=>signOut(auth);
-openAuthBtn.onclick=()=>authCard.style.display=authCard.style.display==='none'?'block':'none';
-resetPassBtn.onclick=async()=>{ if(!siEmail.value){ showToast("⚠️ Enter your email"); return; } try{ await sendPasswordResetEmail(auth,siEmail.value); showToast("✅ Reset email sent!"); logActivity("Requested password reset"); }catch(e){ showToast("⚠️ "+e.message); } };
-updateProfileBtn.onclick=async()=>{ try{ await updateProfile(auth.currentUser,{displayName:updateName.value}); showToast("✅ Profile updated!"); logActivity("Updated profile"); onAuthStateChanged(auth,auth.currentUser); }catch(e){ showToast("⚠️ "+e.message); } };
+/* ===========================
+   Permission: Desktop notifications
+   =========================== */
+if ("Notification" in window && Notification.permission !== "granted") {
+  Notification.requestPermission().catch(()=>{/* ignore */});
+}
+function showDesktopNotification(title, body){
+  if(!("Notification" in window)) return;
+  if(Notification.permission === "granted"){
+    try { new Notification(title, { body, icon: profilePic.src }); } catch(e){ console.warn("Notification error", e); }
+  }
+}
+
+/* ===========================
+   Presence — Realtime DB (online/offline)
+   =========================== */
+let presenceRef = null;
+function setPresenceForUser(user){
+  try {
+    if(!user) return;
+    presenceRef = rdbRef(rdb, `status/${user.uid}`);
+    const onlinePayload = { state: 'online', last_changed: rdbServerTimestamp() };
+    const offlinePayload = { state: 'offline', last_changed: rdbServerTimestamp() };
+    onDisconnect(presenceRef).set(offlinePayload).then(() => rdbSet(presenceRef, onlinePayload));
+    // listen for online count
+    const statusColRef = rdbRef(rdb, 'status');
+    rdbOnValue(statusColRef, snap => {
+      const data = snap.val() || {};
+      const online = Object.values(data).filter(s => s && s.state === 'online').length;
+      onlineCountEl.textContent = `${online} online`;
+    });
+  } catch(e) { console.warn("Presence error", e); }
+}
+
+/* ===========================
+   Activity logging helper
+   =========================== */
+function notifyAuth(t){ authStatus.textContent = t; }
+async function logActivity(action){
+  const user = auth.currentUser;
+  if(!user) return;
+  try{
+    await addDoc(collection(db,"activity"),{ uid:user.uid, action, email:user.email, timestamp: serverTimestamp() });
+  }catch(e){ console.error("Activity log error:", e); }
+}
+
+/* ===========================
+   Load activity feed
+   =========================== */
+function loadActivity(uid){
+  const q = query(collection(db,"activity"), orderBy("timestamp","desc"), limit(10));
+  onSnapshot(q, snapshot => {
+    activityFeed.innerHTML = "";
+    snapshot.forEach(d => {
+      const data = d.data();
+      const item = document.createElement("div");
+      item.className = "activity-item";
+      const time = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString() : '';
+      item.textContent = `[${time}] ${data.action}`;
+      activityFeed.appendChild(item);
+    });
+  });
+}
+
+/* ===========================
+   Smart reply suggestions (local)
+   =========================== */
+const smartReplies = ["Nice!", "On my way 🚀", "Got it 👍", "Haha 😂", "Love it 🔥", "Sure thing", "Working on it"];
+let suggestionTimeout;
+chatInput.addEventListener('input', () => {
+  clearTimeout(suggestionTimeout);
+  const val = chatInput.value.trim();
+  if(val.length > 2){
+    suggestionTimeout = setTimeout(() => {
+      const s = smartReplies[Math.floor(Math.random()*smartReplies.length)];
+      suggestionsEl.textContent = `Suggested: ${s} — click to use`;
+      suggestionsEl.style.cursor = 'pointer';
+    }, 450);
+  } else {
+    suggestionsEl.textContent = '';
+    suggestionsEl.style.cursor = 'default';
+  }
+
+  // typing indicator logic handled below (sends typing status)
+});
+
+suggestionsEl.addEventListener('click', () => {
+  if(suggestionsEl.textContent) {
+    const pick = suggestionsEl.textContent.replace('Suggested: ', '').split(' — ')[0];
+    chatInput.value += (chatInput.value ? ' ' : '') + pick;
+    suggestionsEl.textContent = '';
+  }
+});
+
+/* ===========================
+   Messages: load, seen, notifications
+   =========================== */
+import { getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"; // dynamic import to avoid lint issues
+
+async function loadMessages(){
+  const q = query(collection(db,"messages"), orderBy("timestamp","asc"), limit(200));
+  onSnapshot(q, snapshot => {
+    messagesEl.innerHTML = "";
+    snapshot.docChanges().forEach(change => {
+      const data = change.doc.data();
+      const id = change.doc.id;
+      if(change.type === 'added' || change.type === 'modified'){
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message';
+        const avatar = data.avatarURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name||'U')}&background=0078d7&color=fff&size=100`;
+        const timeStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString() : '';
+        msgDiv.innerHTML = `
+          <img src="${avatar}" alt="avatar">
+          <div style="display:flex;flex-direction:column;">
+            <div class="meta"><strong>${data.name || 'Unknown'}</strong> · <span style="opacity:0.6">${timeStr}</span> ${data.seen ? ' · ✔' : ''}</div>
+            <div class="content">${data.message || ''}</div>
+          </div>
+        `;
+        messagesEl.appendChild(msgDiv);
+
+        // Desktop notif & toast for messages from others
+        if(auth.currentUser && data.uid !== auth.currentUser.uid && change.type === 'added'){
+          showToast(`📨 New message from ${data.name}`);
+          showDesktopNotification(`${data.name}`, `${(data.message||'Sent an image').slice(0,120)}`);
+        }
+
+        // mark as seen if it's not from me
+        if(auth.currentUser && data.uid !== auth.currentUser.uid && !data.seen){
+          setTimeout(async ()=> { // small delay to ensure UI rendered
+            try { await setDoc(doc(db, "messages", id), { seen: true }, { merge: true }); } catch(e){ console.warn("Mark seen error", e); }
+          }, 600);
+        }
+      }
+    });
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  });
+}
+
+/* ===========================
+   Send message (text)
+   =========================== */
+sendMsgBtn.onclick = async () => {
+  const msg = chatInput.value.trim();
+  if(!msg){ showToast("⚠️ Enter a message"); return;}
+  try{
+    const user = auth.currentUser;
+    if(!user) { showToast("⚠️ You must be signed in"); return; }
+    await addDoc(collection(db,"messages"),{
+      uid: user.uid,
+      name: user.displayName || user.email,
+      avatarURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent((user.displayName||user.email).split(" ").map(n=>n[0]).join(""))}&background=0078d7&color=fff&size=100`,
+      message: msg,
+      timestamp: serverTimestamp(),
+      seen: false
+    });
+    chatInput.value = "";
+    suggestionsEl.textContent = '';
+  }catch(e){ showToast("⚠️ "+e.message); console.error(e); }
+};
+
+/* ===========================
+   Image upload & send
+   =========================== */
+uploadBtn.onclick = () => imageUpload.click();
+imageUpload.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const user = auth.currentUser;
+  if(!user){ showToast("⚠️ Sign in to send images"); return; }
+  const path = `chat_images/${user.uid}_${Date.now()}_${file.name.replace(/\s+/g,'_')}`;
+  const storageRef = sRef(storage, path);
+  showToast("Uploading image...");
+  try{
+    const snap = await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(snap.ref);
+    await addDoc(collection(db,"messages"), {
+      uid: user.uid,
+      name: user.displayName || user.email,
+      avatarURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent((user.displayName||user.email).split(" ").map(n=>n[0]).join(""))}&background=0078d7&color=fff&size=100`,
+      message: `<img src="${url}" style="max-width:300px; border-radius:8px;">`,
+      timestamp: serverTimestamp(),
+      seen: false,
+      isImage: true
+    });
+    showToast("✅ Image sent");
+  }catch(err){ showToast("⚠️ Upload failed"); console.error(err); }
+});
+
+/* ===========================
+   Typing indicator (Firestore 'typing' collection)
+   =========================== */
+chatInput.addEventListener('input', async () => {
+  const user = auth.currentUser;
+  if(!user) return;
+  const typingRef = doc(db, 'typing', user.uid);
+  try{
+    await setDoc(typingRef, { name: user.displayName || user.email, isTyping: true, timestamp: serverTimestamp() });
+  }catch(e){ console.warn("Typing set error", e); }
+  clearTimeout(window.typingTimeout);
+  window.typingTimeout = setTimeout(async ()=>{
+    try{ await setDoc(typingRef, { name: user.displayName || user.email, isTyping: false, timestamp: serverTimestamp() }); } catch(e){/*ignore*/ }
+  }, 1600);
+});
+
+const typingCol = collection(db, 'typing');
+onSnapshot(typingCol, snap => {
+  let typingUsers = [];
+  snap.forEach(d => {
+    const data = d.data();
+    if(!auth.currentUser) return;
+    if(data.isTyping && d.id !== auth.currentUser.uid) typingUsers.push(data.name);
+  });
+  typingIndicator.textContent = typingUsers.length ? `${typingUsers.join(', ')} is typing...` : '';
+});
+
+/* ===========================
+   Auth events
+   =========================== */
+btnSignup.onclick = async () => {
+  try{
+    await createUserWithEmailAndPassword(auth, suEmail.value, suPass.value);
+    showToast("✅ Account created!");
+    logActivity("Signed up with email");
+  }catch(e){ showToast("⚠️ "+(e.message || e)); console.error(e); }
+};
+
+btnSignin.onclick = async () => {
+  try{
+    await signInWithEmailAndPassword(auth, siEmail.value, siPass.value);
+    showToast("✅ Signed in!");
+    logActivity("Signed in with email");
+    if(rememberMe.checked) localStorage.setItem('rememberedEmail', siEmail.value); else localStorage.removeItem('rememberedEmail');
+  }catch(e){ showToast("⚠️ "+(e.message || e)); console.error(e); }
+};
+
+btnGoogle.onclick = async () => {
+  try{
+    await signInWithPopup(auth, new GoogleAuthProvider());
+    showToast("✅ Google sign-in success!");
+    logActivity("Signed in with Google");
+  }catch(e){ showToast("⚠️ "+(e.message || e)); console.error(e); }
+};
+
+signoutBtn.onclick = async () => {
+  try {
+    if(auth.currentUser && presenceRef) await rdbSet(presenceRef, { state: 'offline', last_changed: rdbServerTimestamp() });
+    await signOut(auth);
+  } catch(e){ console.error(e); }
+};
+
+openAuthBtn.onclick = () => authCard.style.display = authCard.style.display === 'none' ? 'block' : 'none';
+
+resetPassBtn.onclick = async () => {
+  if(!siEmail.value){ showToast("⚠️ Enter your email"); return; }
+  try{ await sendPasswordResetEmail(auth, siEmail.value); showToast("✅ Reset email sent!"); logActivity("Requested password reset"); } catch(e){ showToast("⚠️ "+(e.message||e)); }
+};
+
+updateProfileBtn.onclick = async () => {
+  try{
+    await updateProfile(auth.currentUser, { displayName: updateName.value });
+    showToast("✅ Profile updated!");
+    logActivity("Updated profile");
+    // refresh UI
+    onAuthStateChanged(auth, auth.currentUser);
+  }catch(e){ showToast("⚠️ "+(e.message || e)); }
+};
+
 if(localStorage.getItem('rememberedEmail')) siEmail.value = localStorage.getItem('rememberedEmail');
 
-function notifyAuth(t){ authStatus.textContent=t; }
-async function logActivity(action){ const user=auth.currentUser; if(!user)return; try{ await addDoc(collection(db,"activity"),{ uid:user.uid, action,email:user.email,timestamp:serverTimestamp() }); }catch(e){ console.error("Activity log error:",e); } }
-function loadActivity(uid){ const q=query(collection(db,"activity"),orderBy("timestamp","desc"),limit(10)); onSnapshot(q,snapshot=>{ activityFeed.innerHTML=""; snapshot.forEach(doc=>{ const data=doc.data(); const item=document.createElement("div"); item.className="activity-item"; item.textContent=`[${new Date(data.timestamp?.toDate()).toLocaleTimeString()}] ${data.action}`; activityFeed.appendChild(item); }); }); }
-
-async function loadMessages(){ const q=query(collection(db,"messages"),orderBy("timestamp","asc"),limit(100)); onSnapshot(q,snapshot=>{ messagesEl.innerHTML=""; snapshot.docChanges().forEach(change=>{ const data=change.doc.data(); if(change.type==='added'){ const msgDiv=document.createElement("div"); msgDiv.className="message"; msgDiv.innerHTML=`<img src="${data.avatarURL}" alt="avatar"><div class="content"><strong>${data.name}:</strong> ${data.message}</div>`; messagesEl.appendChild(msgDiv); if(auth.currentUser && data.uid!==auth.currentUser.uid) showToast(`📨 New message from ${data.name}`); } }); messagesEl.scrollTop=messagesEl.scrollHeight; }); }
-
-sendMsgBtn.onclick=async()=>{ const msg=chatInput.value.trim(); if(!msg){ showToast("⚠️ Enter a message"); return; } try{ const user=auth.currentUser; await addDoc(collection(db,"messages"),{ uid:user.uid, name:user.displayName||user.email, avatarURL:user.photoURL||`https://ui-avatars.com/api/?name=${(user.displayName||user.email).split(" ").map(n=>n[0]).join("")}&background=0078d7&color=fff&size=100`, message:msg, timestamp:serverTimestamp() }); chatInput.value=""; }catch(e){ showToast("⚠️ "+e.message); } }
-
-chatInput.addEventListener('input',async()=>{ const user=auth.currentUser; if(!user) return; const typingRef=doc(db,'typing',user.uid); await setDoc(typingRef,{ name:user.displayName||user.email, isTyping:true, timestamp:serverTimestamp() }); clearTimeout(window.typingTimeout); window.typingTimeout=setTimeout(async()=>{ await setDoc(typingRef,{ name:user.displayName||user.email, isTyping:false, timestamp:serverTimestamp() }); },2000); });
-
-const typingCol=collection(db,'typing');
-onSnapshot(typingCol,snapshot=>{ let typingUsers=[]; snapshot.forEach(doc=>{ const data=doc.data(); if(data.isTyping && auth.currentUser.uid!==doc.id) typingUsers.push(data.name); }); typingIndicator.textContent=typingUsers.length>0?typingUsers.join(', ')+' is typing...':''; });
-
-emojiBtn.onclick=()=>{ const emoji=prompt("Enter an emoji:"); if(emoji) chatInput.value+=emoji; };
-
-onAuthStateChanged(auth,user=>{
+/* ===========================
+   Auth state observer
+   =========================== */
+onAuthStateChanged(auth, user => {
   if(user){
     notifyAuth("Signed in");
-    authCard.style.display='none'; appCard.style.display='block';
-    userArea.style.display='flex'; authButtons.style.display='none';
-    userNameEl.textContent=user.displayName||user.email;
-    profileEmail.textContent=user.email;
-    profilePic.src=user.photoURL||`https://ui-avatars.com/api/?name=${(user.displayName||user.email).split(" ").map(n=>n[0]).join("")}&background=0078d7&color=fff&size=100`;
-    updateName.value=user.displayName||"";
+    authCard.style.display = 'none'; appCard.style.display = 'block';
+    userArea.style.display = 'flex'; authButtons.style.display = 'none';
+    userNameEl.textContent = user.displayName || user.email;
+    profileEmail.textContent = user.email;
+    profilePic.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent((user.displayName||user.email).split(" ").map(n=>n[0]).join(""))}&background=0078d7&color=fff&size=100`;
+    updateName.value = user.displayName || "";
+    setPresenceForUser(user);
     loadActivity(user.uid);
     loadMessages();
   } else {
     notifyAuth("Not signed in");
-    authCard.style.display='block'; appCard.style.display='none';
-    userArea.style.display='none'; authButtons.style.display='flex';
+    authCard.style.display = 'block'; appCard.style.display = 'none';
+    userArea.style.display = 'none'; authButtons.style.display = 'flex';
   }
 });
+
+/* ===========================
+   Emoji picker (in-place)
+   =========================== */
+let picker;
+emojiBtn.addEventListener('click', () => {
+  if(!picker){
+    picker = document.createElement('emoji-picker');
+    picker.style.position = 'absolute';
+    picker.style.bottom = '60px';
+    picker.style.right = '12px';
+    picker.style.zIndex = 9999;
+    document.body.appendChild(picker);
+    picker.addEventListener('emoji-click', event => {
+      chatInput.value += event.detail.unicode;
+      picker.style.display = 'none';
+      chatInput.focus();
+    });
+  }
+  picker.style.display = picker.style.display === 'none' || !picker.style.display ? 'block' : 'none';
+});
+
+/* ===========================
+   Focus shortcuts
+   =========================== */
+chatInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsgBtn.click(); }
+});
+
+/* ===========================
+   Initial UI tweaks
+   =========================== */
+setTimeout(()=>{ loader.style.display='none'; }, 700);
+
+/* ===========================
+   End of module
+   =========================== */
 </script>
 </body>
 </html>

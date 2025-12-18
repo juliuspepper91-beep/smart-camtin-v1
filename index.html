@@ -174,6 +174,65 @@ body.christmas .btn:hover {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12px); }
 }
+/* =========================
+   Auth Image Design Section
+   ========================= */
+.auth-image-design {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 16px;
+  margin-top: 16px;
+  margin-bottom: 20px;
+  background: linear-gradient(
+    135deg,
+    rgba(0,120,215,0.18),
+    rgba(0,0,0,0.25)
+  );
+}
+
+body.light .auth-image-design {
+  background: linear-gradient(
+    135deg,
+    rgba(0,120,215,0.12),
+    rgba(255,255,255,0.85)
+  );
+}
+
+.auth-image-design img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 3px solid var(--primary);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+}
+
+.auth-image-text h2 {
+  margin: 0 0 8px 0;
+  font-size: 22px;
+}
+
+.auth-image-text p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.85;
+  line-height: 1.5;
+}
+
+/* Mobile view */
+@media (max-width: 700px) {
+  .auth-image-design {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .auth-image-design img {
+    width: 130px;
+    height: 130px;
+  }
+}
 
 </style>
 </head>
@@ -201,6 +260,22 @@ body.christmas .btn:hover {
 <main>
   <!-- AUTH CARD -->
   <div id="auth-card" class="card">
+    <!-- AUTH IMAGE DESIGN -->
+<div class="auth-image-design">
+  <img
+    src="https://img.sanishtech.com/u/b3d222fa5dbd823d22922121aac64dda.png"
+    alt="Camtin"
+  />
+
+  <div class="auth-image-text">
+    <h2>Welcome to Smart Camtin</h2>
+    <p>
+      A smart platform to chat, share images, see who is online,
+      and manage your profile securely — all in one place.
+    </p>
+  </div>
+</div>
+
     <div style="display:flex;justify-content:space-between;align-items:center; flex-wrap:wrap;">
       <div>
         <h2 style="margin:0 0 6px 0">Welcome to Smart Camtin</h2>

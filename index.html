@@ -6,6 +6,10 @@
 <title>📸 Smart Camtin — Enhanced Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0078d7">
+
+<!-- Tailwind CDN (optional — you're using existing CSS but Tailwind is available if you want to add utilities) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
 <style>
 :root {
   --primary: #0078d7;
@@ -112,13 +116,73 @@ body.light input.chat-input { border-color:#ccc; color:#111; }
 .toast.show { opacity:1; pointer-events:auto; }
 .password-toggle { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:inherit; }
 .skeleton { background: linear-gradient(-90deg, #ddd 0%, #eee 50%, #ddd 100%); background-size: 400% 400%; animation: shimmer 1.4s ease infinite; border-radius:8px; }
+.online-user { cursor:pointer; display:inline-block; padding:4px 8px; margin-right:6px; margin-bottom:6px; border-radius:8px; background:rgba(255,255,255,0.04); }
+.online-user:hover { transform:translateY(-2px); background:rgba(0,0,0,0.14); }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 @media (max-width:820px) { .auth-wrap { flex-direction:column; gap:16px; } .profile-container { flex-direction:column; gap:12px; } nav h1 { font-size:18px; } .card { padding:16px; } }
+/* =========================
+   🎄 Christmas Mood Styles
+   ========================= */
+
+/* Festive glow */
+.christmas-glow {
+  box-shadow: 0 0 18px rgba(255, 60, 60, 0.35),
+              0 0 30px rgba(60, 200, 120, 0.25);
+}
+
+/* Christmas accent colors */
+:root {
+  --christmas-red: #c62828;
+  --christmas-green: #2e7d32;
+  --christmas-gold: #ffd54f;
+}
+
+/* Navbar festive border */
+body.christmas nav {
+  border-bottom: 2px solid var(--christmas-gold);
+}
+
+/* Christmas button pulse */
+body.christmas .btn {
+  background: linear-gradient(135deg, var(--christmas-red), var(--christmas-green));
+}
+body.christmas .btn:hover {
+  filter: brightness(1.15);
+}
+
+/* Snow canvas */
+#snow-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Santa floating */
+#santa {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 40px;
+  animation: santaFloat 4s ease-in-out infinite;
+  z-index: 9999;
+  cursor: pointer;
+}
+
+@keyframes santaFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
 </style>
 </head>
 <body>
 <div id="loader">🚀 Loading Smart Camtin...</div>
 <div id="toast" class="toast"></div>
+<canvas id="snow-canvas"></canvas>
+<div id="santa" title="Ho Ho Ho! 🎁">🎅</div>
+
 
 <nav>
   <h1>📸 Smart Camtin</h1>
@@ -186,9 +250,12 @@ body.light input.chat-input { border-color:#ccc; color:#111; }
 
     <!-- Chat -->
     <div class="card chat-card">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
         <h3>💬 Chat</h3>
-        <div id="online-count" class="small">0 online</div>
+        <div>
+          <div id="online-count" class="small">0 online</div>
+          <div id="online-users" class="small" title="Click a user to reply" style="max-width:320px; overflow:auto; padding-top:6px;"></div>
+        </div>
       </div>
 
       <div id="messages" class="messages">
@@ -226,7 +293,7 @@ body.light input.chat-input { border-color:#ccc; color:#111; }
    =========================== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc, enableIndexedDbPersistence, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getDatabase, ref as rdbRef, set as rdbSet, onDisconnect, onValue as rdbOnValue, serverTimestamp as rdbServerTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
@@ -234,7 +301,9 @@ const firebaseConfig = {
   apiKey:"AIzaSyDwT1JTnw6rqyTaO1sbZXD624_HblKMPZM",
   authDomain:"smartcamtin-a7e07.firebaseapp.com",
   projectId:"smartcamtin-a7e07",
-  appId:"1:397311969979:web:d08a7a063ba1683e16f79e"
+  storageBucket: "smartcamtin-a7e07.appspot.com",
+  appId:"1:397311969979:web:d08a7a063ba1683e16f79e",
+  databaseURL: "https://smartcamtin-a7e07-default-rtdb.firebaseio.com"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -262,7 +331,7 @@ const rememberMe = $('remember-me'), resetPassBtn = $('reset-pass');
 const updateName = $('update-name'), updateProfileBtn = $('update-profile');
 const activityFeed = $('activity-feed');
 const messagesEl = $('messages'), chatInput = $('chat-input'), sendMsgBtn = $('send-msg'), emojiBtn = $('emoji-btn'), typingIndicator = $('typing-indicator');
-const uploadBtn = $('upload-btn'), imageUpload = $('image-upload'), suggestionsEl = $('suggestions'), onlineCountEl = $('online-count');
+const uploadBtn = $('upload-btn'), imageUpload = $('image-upload'), suggestionsEl = $('suggestions'), onlineCountEl = $('online-count'), onlineUsersEl = $('online-users');
 
 function showToast(msg){ toast.textContent = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 2500); }
 function togglePassword(id){ const input=$(id); input.type = input.type==='password' ? 'text' : 'password'; }
@@ -295,22 +364,55 @@ function showDesktopNotification(title, body){
 }
 
 /* ===========================
-   Presence — Realtime DB (online/offline)
+   Presence — Realtime DB (online/offline) + clickable list
    =========================== */
 let presenceRef = null;
 function setPresenceForUser(user){
   try {
     if(!user) return;
     presenceRef = rdbRef(rdb, `status/${user.uid}`);
-    const onlinePayload = { state: 'online', last_changed: rdbServerTimestamp() };
-    const offlinePayload = { state: 'offline', last_changed: rdbServerTimestamp() };
+    const onlinePayload = { state: 'online', name: user.displayName || user.email, last_changed: rdbServerTimestamp() };
+    const offlinePayload = { state: 'offline', name: user.displayName || user.email, last_changed: rdbServerTimestamp() };
     onDisconnect(presenceRef).set(offlinePayload).then(() => rdbSet(presenceRef, onlinePayload));
-    // listen for online count
+
+    // listen for online users and show names (clickable)
     const statusColRef = rdbRef(rdb, 'status');
     rdbOnValue(statusColRef, snap => {
       const data = snap.val() || {};
-      const online = Object.values(data).filter(s => s && s.state === 'online').length;
-      onlineCountEl.textContent = `${online} online`;
+      const users = [];
+      for(const [uid, val] of Object.entries(data)){
+        if(!val) continue;
+        if(val.state === 'online') users.push({ uid, name: val.name || 'Unknown' });
+      }
+
+      // update count
+      onlineCountEl.textContent = `${users.length} online`;
+
+      // update clickable list
+      onlineUsersEl.innerHTML = '';
+      if(users.length === 0){
+        onlineUsersEl.textContent = 'No one is online';
+      } else {
+        users.forEach(u => {
+          // don't show myself in the list
+          if(auth.currentUser && u.uid === auth.currentUser.uid) return;
+          const el = document.createElement('span');
+          el.className = 'online-user';
+          el.title = `Click to reply to ${u.name}`;
+          el.textContent = u.name;
+          el.dataset.uid = u.uid;
+          el.dataset.name = u.name;
+          el.addEventListener('click', () => {
+            // prefill chat with mention; you can change this to open private chat flow
+            chatInput.value = `@${u.name} `;
+            chatInput.focus();
+            showToast(`Replying to ${u.name}`);
+          });
+          onlineUsersEl.appendChild(el);
+        });
+        // if all users were filtered (only me online), show message
+        if(onlineUsersEl.children.length === 0) onlineUsersEl.textContent = 'No one else online';
+      }
     });
   } catch(e) { console.warn("Presence error", e); }
 }
@@ -338,7 +440,7 @@ function loadActivity(uid){
       const data = d.data();
       const item = document.createElement("div");
       item.className = "activity-item";
-      const time = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString() : '';
+      const time = data.timestamp ? (data.timestamp.toDate ? new Date(data.timestamp.toDate()).toLocaleTimeString() : new Date().toLocaleTimeString()) : '';
       item.textContent = `[${time}] ${data.action}`;
       activityFeed.appendChild(item);
     });
@@ -363,10 +465,7 @@ chatInput.addEventListener('input', () => {
     suggestionsEl.textContent = '';
     suggestionsEl.style.cursor = 'default';
   }
-
-  // typing indicator logic handled below (sends typing status)
 });
-
 suggestionsEl.addEventListener('click', () => {
   if(suggestionsEl.textContent) {
     const pick = suggestionsEl.textContent.replace('Suggested: ', '').split(' — ')[0];
@@ -378,8 +477,6 @@ suggestionsEl.addEventListener('click', () => {
 /* ===========================
    Messages: load, seen, notifications
    =========================== */
-import { getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"; // dynamic import to avoid lint issues
-
 async function loadMessages(){
   const q = query(collection(db,"messages"), orderBy("timestamp","asc"), limit(200));
   onSnapshot(q, snapshot => {
@@ -391,7 +488,7 @@ async function loadMessages(){
         const msgDiv = document.createElement('div');
         msgDiv.className = 'message';
         const avatar = data.avatarURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name||'U')}&background=0078d7&color=fff&size=100`;
-        const timeStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleTimeString() : '';
+        const timeStr = data.timestamp && data.timestamp.toDate ? new Date(data.timestamp.toDate()).toLocaleTimeString() : '';
         msgDiv.innerHTML = `
           <img src="${avatar}" alt="avatar">
           <div style="display:flex;flex-direction:column;">
@@ -438,7 +535,7 @@ sendMsgBtn.onclick = async () => {
     });
     chatInput.value = "";
     suggestionsEl.textContent = '';
-  }catch(e){ showToast("⚠️ "+e.message); console.error(e); }
+  }catch(e){ showToast("⚠️ "+(e.message || e)); console.error(e); }
 };
 
 /* ===========================
@@ -608,6 +705,67 @@ setTimeout(()=>{ loader.style.display='none'; }, 700);
 /* ===========================
    End of module
    =========================== */
+   
+/* =========================
+   🎄 Christmas Snow Effect
+   ========================= */
+
+const canvas = document.getElementById("snow-canvas");
+const ctx = canvas.getContext("2d");
+
+let w, h;
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+const snowflakes = Array.from({ length: 120 }, () => ({
+  x: Math.random() * w,
+  y: Math.random() * h,
+  r: Math.random() * 3 + 1,
+  d: Math.random() + 1
+}));
+
+function snow() {
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.beginPath();
+  snowflakes.forEach(f => {
+    ctx.moveTo(f.x, f.y);
+    ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+  });
+  ctx.fill();
+
+  snowflakes.forEach(f => {
+    f.y += Math.pow(f.d, 2);
+    if (f.y > h) {
+      f.y = 0;
+      f.x = Math.random() * w;
+    }
+  });
+
+  requestAnimationFrame(snow);
+}
+snow();
+
+/* =========================
+   🎅 Christmas Mode Toggle
+   ========================= */
+const santa = document.getElementById("santa");
+
+santa.addEventListener("click", () => {
+  document.body.classList.toggle("christmas");
+
+  document.querySelectorAll(".card").forEach(card => {
+    card.classList.toggle("christmas-glow");
+  });
+
+  santa.textContent =
+    document.body.classList.contains("christmas") ? "🎁" : "🎅";
+});
+
 </script>
 </body>
 </html>

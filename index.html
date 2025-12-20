@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>📸 Smart Camtin — Enhanced Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <meta name="theme-color" content="#0078d7">
 
 <!-- Tailwind CDN (optional — you're using existing CSS but Tailwind is available if you want to add utilities) -->
@@ -102,16 +102,22 @@ body.light input { border-color:#ccc; color:#111; }
 .chat-card { margin-top:20px; display:flex; flex-direction:column; max-height:520px; }
 .messages { flex:1; overflow-y:auto; padding:10px; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:rgba(0,0,0,0.08); margin-bottom:6px; min-height:180px; }
 .message { display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; }
-.message .meta { font-size:12px; opacity:0.7; margin-bottom:4px; }
+.message .meta { font-size:12px; opacity:0.7; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
 .message img { width:36px; height:36px; border-radius:50%; object-fit:cover; }
-.message .content { background: rgba(0,0,0,0.18); padding:8px 12px; border-radius:10px; max-width:78%; word-wrap:break-word; }
+.message .content { background: rgba(0,0,0,0.18); padding:8px 12px; border-radius:10px; max-width:78%; word-wrap:break-word; position:relative; }
 body.light .messages .message .content { background: rgba(255,255,255,0.6); }
+.message-actions { display:flex; gap:6px; margin-left:4px; opacity:0; transition: opacity 0.15s ease; }
+.message.own .content { border:1px solid rgba(0,120,215,0.5); }
+.message:hover .message-actions { opacity:1; }
+.message-action-btn { font-size:11px; padding:2px 6px; border-radius:999px; border:none; cursor:pointer; background:rgba(255,255,255,0.1); color:inherit; }
+.message-action-btn:hover { background:rgba(255,255,255,0.22); }
+.message-edited-tag { font-size:10px; opacity:0.6; margin-left:4px; }
 input.chat-input { flex:1; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); background:transparent; color:inherit; }
 body.light input.chat-input { border-color:#ccc; color:#111; }
 .chat-controls { display:flex; gap:8px; align-items:center; }
 #typing-indicator { font-size:13px; margin-bottom:6px; opacity:0.8; min-height:18px; }
 .footer-row { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:12px; }
-#loader { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:600; background: var(--bg-dark); color: var(--text-light); z-index:999; }
+#loader { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:606; background: var(--bg-dark); color: var(--text-light); z-index:999; }
 .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--primary); color:#fff; padding:10px 20px; border-radius:10px; opacity:0; transition:0.5s ease; pointer-events:none; z-index:9999; }
 .toast.show { opacity:1; pointer-events:auto; }
 .password-toggle { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:inherit; }
@@ -175,63 +181,200 @@ body.christmas .btn:hover {
   50% { transform: translateY(-12px); }
 }
 /* =========================
-   Auth Image Design Section
+   Auth Hero Design Section
    ========================= */
-.auth-image-design {
+.auth-hero {
   display: flex;
-  gap: 20px;
-  align-items: center;
-  padding: 18px;
-  border-radius: 16px;
-  margin-top: 16px;
-  margin-bottom: 20px;
-  background: linear-gradient(
-    135deg,
-    rgba(0,120,215,0.18),
-    rgba(0,0,0,0.25)
-  );
+  gap: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  min-height: 280px;
 }
 
-body.light .auth-image-design {
-  background: linear-gradient(
-    135deg,
-    rgba(0,120,215,0.12),
-    rgba(255,255,255,0.85)
-  );
+body.light .auth-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
 }
 
-.auth-image-design img {
-  width: 160px;
-  height: 160px;
+.auth-hero-image {
+  flex: 0 0 45%;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-hero-image img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 14px;
-  border: 3px solid var(--primary);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+  object-position: center top;
+  transition: transform 0.5s ease;
 }
 
-.auth-image-text h2 {
-  margin: 0 0 8px 0;
-  font-size: 22px;
+.auth-hero:hover .auth-hero-image img {
+  transform: scale(1.05);
 }
 
-.auth-image-text p {
-  margin: 0;
+.auth-hero-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 60%, rgba(26,26,46,0.9) 100%);
+}
+
+body.light .auth-hero-image::after {
+  background: linear-gradient(90deg, transparent 60%, rgba(102,126,234,0.8) 100%);
+}
+
+.auth-hero-content {
+  flex: 1;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.auth-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  width: fit-content;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.auth-hero-badge .dot {
+  width: 8px;
+  height: 8px;
+  background: #00ff88;
+  border-radius: 50%;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.auth-hero-content h2 {
+  margin: 0 0 12px 0;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+  background: linear-gradient(135deg, #fff 0%, #a8edea 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.light .auth-hero-content h2 {
+  background: linear-gradient(135deg, #fff 0%, #ffecd2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-hero-content p {
+  margin: 0 0 20px 0;
   font-size: 14px;
-  opacity: 0.85;
-  line-height: 1.5;
+  opacity: 0.9;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.85);
+}
+
+.auth-hero-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.auth-hero-features span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.1);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.auth-hero-features span:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+}
+
+.auth-hero-features span .icon {
+  font-size: 16px;
+}
+
+/* Decorative elements */
+.auth-hero-content::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(0,120,215,0.3) 0%, transparent 70%);
+  border-radius: 50%;
 }
 
 /* Mobile view */
 @media (max-width: 700px) {
-  .auth-image-design {
+  .auth-hero {
     flex-direction: column;
+    min-height: auto;
+  }
+  
+  .auth-hero-image {
+    flex: 0 0 200px;
+    max-height: 200px;
+  }
+  
+  .auth-hero-image::after {
+    background: linear-gradient(180deg, transparent 50%, rgba(26,26,46,0.95) 100%);
+  }
+  
+  body.light .auth-hero-image::after {
+    background: linear-gradient(180deg, transparent 50%, rgba(102,126,234,0.9) 100%);
+  }
+  
+  .auth-hero-content {
+    padding: 24px 20px;
     text-align: center;
   }
-
-  .auth-image-design img {
-    width: 130px;
-    height: 130px;
+  
+  .auth-hero-content h2 {
+    font-size: 22px;
   }
+  
+  .auth-hero-badge {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .auth-hero-features {
+    justify-content: center;
+  }
+}
+
+/* Legacy support */
+.auth-image-design {
+  display: none;
 }
 
 </style>
@@ -241,7 +384,6 @@ body.light .auth-image-design {
 <div id="toast" class="toast"></div>
 <canvas id="snow-canvas"></canvas>
 <div id="santa" title="Ho Ho Ho! 🎁">🎅</div>
-
 
 <nav>
   <h1>📸 Smart Camtin</h1>
@@ -260,25 +402,56 @@ body.light .auth-image-design {
 <main>
   <!-- AUTH CARD -->
   <div id="auth-card" class="card">
-    <!-- AUTH IMAGE DESIGN -->
-<div class="auth-image-design">
-  <img
-    src="https://img.sanishtech.com/u/b3d222fa5dbd823d22922121aac64dda.png"
-    alt="Camtin"
-  />
+    <!-- Beautiful Auth Hero Section -->
+    <div class="auth-hero">
+      <div class="auth-hero-image">
+        <img 
+          src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=800&fit=crop&crop=faces" 
+          alt="Welcome to Smart Camtin"
+        />
+      </div>
+      <div class="auth-hero-content">
+        <div class="auth-hero-badge">
+          <span class="dot"></span>
+          <span>Join 10,000+ Users</span>
+        </div>
+        <h2>Welcome to Smart Camtin ✨</h2>
+        <p>
+          Connect, chat, and share moments with friends in real-time. 
+          Enjoy a cozy Christmas vibe while you talk, and experience a beautifully designed platform built for modern communication.
+        </p>
+        <div class="auth-hero-features">
+          <span><span class="icon">💬</span> Real-time Chat</span>
+          <span><span class="icon">📸</span> Share Photos</span>
+          <span><span class="icon">🟢</span> See Who's Online</span>
+          <span><span class="icon">✏️</span> Message Editing/Deletion</span>
+          <span><span class="icon">🔒</span> Secure &amp; Private</span>
+        </div>
+      </div>
+    </div>
 
-  <div class="auth-image-text">
-    <h2>Welcome to Smart Camtin</h2>
-    <p>
-      A smart platform to chat, share images, see who is online,
-      and manage your profile securely — all in one place.
-    </p>
-  </div>
-</div>
+    <!-- Season 1 Model: Ash Spotlight -->
+    <div class="card" style="margin-top:16px; background: linear-gradient(135deg, rgba(15,52,96,0.9), rgba(118,75,162,0.9)); display:flex; flex-wrap:wrap; gap:18px; align-items:center; border-radius:18px; overflow:hidden;">
+      <div style="flex:0 0 120px; display:flex; justify-content:center; padding:14px 0 14px 14px;">
+        <img 
+          src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=400&h=400&fit=crop&crop=faces" 
+          alt="Season 1 Model Ash" 
+          style="width:110px; height:110px; border-radius:18px; object-fit:cover; box-shadow:0 10px 25px rgba(0,0,0,0.35); border:2px solid rgba(255,255,255,0.7);" 
+        />
+      </div>
+      <div style="flex:1; padding:14px 18px 14px 0; min-width:220px; color:#fff;">
+        <div style="font-size:12px; opacity:0.85; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:4px;">Season 1 Model</div>
+        <h3 style="margin:0 0 6px 0; font-size:20px; font-weight:600;">Ash — The Holiday Host</h3>
+        <p style="margin:0 0 6px 0; font-size:13px; opacity:0.9; line-height:1.6;">
+          Ash welcomes you to Smart Camtin Season 1. Share your stories, react with emojis, and
+          connect with friends worldwide in a festive, cozy atmosphere.
+        </p>
+      </div>
+    </div>
 
-    <div style="display:flex;justify-content:space-between;align-items:center; flex-wrap:wrap;">
+    <div style="display:flex;justify-content:space-between;align-items:center; flex-wrap:wrap; margin-top:8px;">
       <div>
-        <h2 style="margin:0 0 6px 0">Welcome to Smart Camtin</h2>
+        <h2 style="margin:0 0 6px 0">Get Started</h2>
         <div class="small">Create an account or sign in to access your dashboard.</div>
       </div>
       <div id="auth-status" class="small">Not signed in</div>
@@ -308,7 +481,7 @@ body.light .auth-image-design {
   <div id="app" class="card" style="display:none;">
     <h2>Dashboard</h2>
     <div class="profile-container">
-      <img id="profile-pic" src="https://res.cloudinary.com/smartcamtin1/image/fetch/f_auto,q_auto/https://smartcamtin1.netlify.app/?_a=BBFAAAAA0" alt="Profile Avatar" loading="lazy">
+      <img id="profile-pic" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile Avatar" loading="lazy">
       <div style="flex:1;">
         <label>Display Name</label>
         <input id="update-name" type="text" placeholder="Your Name">
@@ -352,7 +525,7 @@ body.light .auth-image-design {
 
     <div class="footer-row">
       <p style="margin:0;">🎉 You are signed in successfully!</p>
-      <p class="small">Version: v1.0.4</p>
+      <p class="small">Version: v1.0.5</p>
     </div>
   </div>
 
@@ -368,7 +541,7 @@ body.light .auth-image-design {
    =========================== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc, enableIndexedDbPersistence, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc, enableIndexedDbPersistence, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { getDatabase, ref as rdbRef, set as rdbSet, onDisconnect, onValue as rdbOnValue, serverTimestamp as rdbServerTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
 
@@ -407,6 +580,9 @@ const updateName = $('update-name'), updateProfileBtn = $('update-profile');
 const activityFeed = $('activity-feed');
 const messagesEl = $('messages'), chatInput = $('chat-input'), sendMsgBtn = $('send-msg'), emojiBtn = $('emoji-btn'), typingIndicator = $('typing-indicator');
 const uploadBtn = $('upload-btn'), imageUpload = $('image-upload'), suggestionsEl = $('suggestions'), onlineCountEl = $('online-count'), onlineUsersEl = $('online-users');
+
+// Default profile avatar
+const DEFAULT_AVATAR = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
 
 function showToast(msg){ toast.textContent = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 2500); }
 function togglePassword(id){ const input=$(id); input.type = input.type==='password' ? 'text' : 'password'; }
@@ -550,33 +726,99 @@ suggestionsEl.addEventListener('click', () => {
 });
 
 /* ===========================
-   Messages: load, seen, notifications
+   Messages: load, seen, notifications, edit/delete
    =========================== */
+async function renderMessage(change){
+  const data = change.doc.data();
+  const id = change.doc.id;
+  const isOwn = auth.currentUser && data.uid === auth.currentUser.uid;
+  const existing = document.querySelector(`.message[data-id="${id}"]`);
+  const avatar = data.avatarURL || DEFAULT_AVATAR;
+  const timeStr = data.timestamp && data.timestamp.toDate ? new Date(data.timestamp.toDate()).toLocaleTimeString() : '';
+  const container = existing || document.createElement('div');
+  container.className = 'message' + (isOwn ? ' own' : '');
+  container.dataset.id = id;
+
+  const editedTag = data.edited ? '<span class="message-edited-tag">(edited)</span>' : '';
+
+  container.innerHTML = `
+    <img src="${avatar}" alt="avatar">
+    <div style="display:flex;flex-direction:column;">
+      <div class="meta">
+        <strong>${data.name || 'Unknown'}</strong> · <span style="opacity:0.6">${timeStr}</span> ${data.seen ? ' · ✔' : ''}
+        ${isOwn ? '<div class="message-actions"><button class="message-action-btn" data-action="edit">Edit</button><button class="message-action-btn" data-action="delete">Delete</button></div>' : ''}
+      </div>
+      <div class="content">${data.message || ''} ${editedTag}</div>
+    </div>
+  `;
+
+  if(!existing) {
+    messagesEl.appendChild(container);
+  }
+
+  // Attach action handlers for own messages
+  if(isOwn) {
+    const editBtn = container.querySelector('button[data-action="edit"]');
+    const deleteBtn = container.querySelector('button[data-action="delete"]');
+    if(editBtn) {
+      editBtn.onclick = async () => {
+        const currentText = data.isImage ? '' : (data.plainText || data.message || '');
+        const newText = prompt('Edit your message:', currentText);
+        if(newText === null) return; // cancel
+        const trimmed = newText.trim();
+        if(!trimmed){
+          showToast('⚠️ Message cannot be empty');
+          return;
+        }
+        try{
+          await updateDoc(doc(db,'messages',id),{
+            message: trimmed,
+            plainText: trimmed,
+            edited: true
+          });
+          await logActivity('Edited a message');
+          showToast('✅ Message updated');
+        }catch(e){
+          console.error(e);
+          showToast('⚠️ Unable to edit message');
+        }
+      };
+    }
+    if(deleteBtn) {
+      deleteBtn.onclick = async () => {
+        if(!confirm('Delete this message for everyone?')) return;
+        try{
+          await updateDoc(doc(db,'messages',id),{
+            message: '<span style="opacity:0.6;font-style:italic;">This message was deleted</span>',
+            deleted: true
+          });
+          await logActivity('Deleted a message');
+          showToast('🗑 Message deleted');
+        }catch(e){
+          console.error(e);
+          showToast('⚠️ Unable to delete message');
+        }
+      };
+    }
+  }
+}
+
 async function loadMessages(){
   const q = query(collection(db,"messages"), orderBy("timestamp","asc"), limit(200));
   onSnapshot(q, snapshot => {
     messagesEl.innerHTML = "";
-    snapshot.docChanges().forEach(change => {
-      const data = change.doc.data();
-      const id = change.doc.id;
+    snapshot.docChanges().forEach(async change => {
       if(change.type === 'added' || change.type === 'modified'){
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'message';
-        const avatar = data.avatarURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name||'U')}&background=0078d7&color=fff&size=100`;
-        const timeStr = data.timestamp && data.timestamp.toDate ? new Date(data.timestamp.toDate()).toLocaleTimeString() : '';
-        msgDiv.innerHTML = `
-          <img src="${avatar}" alt="avatar">
-          <div style="display:flex;flex-direction:column;">
-            <div class="meta"><strong>${data.name || 'Unknown'}</strong> · <span style="opacity:0.6">${timeStr}</span> ${data.seen ? ' · ✔' : ''}</div>
-            <div class="content">${data.message || ''}</div>
-          </div>
-        `;
-        messagesEl.appendChild(msgDiv);
+        await renderMessage(change);
+
+        const data = change.doc.data();
+        const id = change.doc.id;
 
         // Desktop notif & toast for messages from others
         if(auth.currentUser && data.uid !== auth.currentUser.uid && change.type === 'added'){
           showToast(`📨 New message from ${data.name}`);
-          showDesktopNotification(`${data.name}`, `${(data.message||'Sent an image').slice(0,120)}`);
+          const body = (data.plainText || data.message || 'Sent an image').replace(/<[^>]+>/g,'');
+          showDesktopNotification(`${data.name}`, `${body.slice(0,120)}`);
         }
 
         // mark as seen if it's not from me
@@ -603,10 +845,12 @@ sendMsgBtn.onclick = async () => {
     await addDoc(collection(db,"messages"),{
       uid: user.uid,
       name: user.displayName || user.email,
-      avatarURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent((user.displayName||user.email).split(" ").map(n=>n[0]).join(""))}&background=0078d7&color=fff&size=100`,
+      avatarURL: user.photoURL || DEFAULT_AVATAR,
       message: msg,
+      plainText: msg,
       timestamp: serverTimestamp(),
-      seen: false
+      seen: false,
+      edited: false
     });
     chatInput.value = "";
     suggestionsEl.textContent = '';
@@ -631,7 +875,7 @@ imageUpload.addEventListener('change', async (e) => {
     await addDoc(collection(db,"messages"), {
       uid: user.uid,
       name: user.displayName || user.email,
-      avatarURL: user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent((user.displayName||user.email).split(" ").map(n=>n[0]).join(""))}&background=0078d7&color=fff&size=100`,
+      avatarURL: user.photoURL || DEFAULT_AVATAR,
       message: `<img src="${url}" style="max-width:300px; border-radius:8px;">`,
       timestamp: serverTimestamp(),
       seen: false,
@@ -696,12 +940,78 @@ btnGoogle.onclick = async () => {
   }catch(e){ showToast("⚠️ "+(e.message || e)); console.error(e); }
 };
 
-signoutBtn.onclick = async () => {
+/* ===========================
+   Sign Out Handler - Fixed & Reliable
+   =========================== */
+async function handleSignOut(e) {
+  if(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
+  console.log("Sign out initiated");
+  showToast("Signing out...");
+  
+  // Immediately reset UI first for instant feedback
+  resetToSignInPage();
+  
   try {
-    if(auth.currentUser && presenceRef) await rdbSet(presenceRef, { state: 'offline', last_changed: rdbServerTimestamp() });
+    // Set presence to offline before signing out
+    if(presenceRef) {
+      try {
+        await rdbSet(presenceRef, { state: 'offline', last_changed: rdbServerTimestamp() });
+      } catch(presErr) {
+        console.warn("Presence update error:", presErr);
+      }
+    }
+    
+    // Sign out from Firebase Auth
     await signOut(auth);
-  } catch(e){ console.error(e); }
-};
+    console.log("Firebase signOut completed successfully");
+    
+  } catch(err) {
+    console.error("Sign out error:", err);
+  }
+}
+
+function resetToSignInPage() {
+  console.log("Resetting UI to sign in page...");
+  
+  // Show auth card (sign in/sign up)
+  if(authCard) authCard.style.display = 'block'; 
+  if(appCard) appCard.style.display = 'none';
+  
+  // Update nav buttons
+  if(userArea) userArea.style.display = 'none'; 
+  if(authButtons) authButtons.style.display = 'flex';
+  
+  // Update status
+  notifyAuth("Not signed in");
+  
+  // Reset profile picture to default
+  if(profilePic) profilePic.src = DEFAULT_AVATAR;
+  
+  // Clear user-specific data
+  if(messagesEl) messagesEl.innerHTML = '<div class="skeleton">Loading messages...</div>';
+  if(activityFeed) activityFeed.innerHTML = '<div class="activity-item skeleton">Loading activities...</div>';
+  if(onlineUsersEl) onlineUsersEl.innerHTML = '';
+  if(onlineCountEl) onlineCountEl.textContent = '0 online';
+  if(userNameEl) userNameEl.textContent = 'Hi, user';
+  if(profileEmail) profileEmail.textContent = '';
+  if(updateName) updateName.value = '';
+  
+  // Scroll to top to show sign in form
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  showToast("✅ You have been signed out!");
+  console.log("UI reset completed");
+}
+
+// Attach sign out event - use only addEventListener for reliability
+if(signoutBtn) {
+  signoutBtn.addEventListener('click', handleSignOut);
+  console.log("Sign out button event attached");
+}
 
 openAuthBtn.onclick = () => authCard.style.display = authCard.style.display === 'none' ? 'block' : 'none';
 
@@ -732,7 +1042,8 @@ onAuthStateChanged(auth, user => {
     userArea.style.display = 'flex'; authButtons.style.display = 'none';
     userNameEl.textContent = user.displayName || user.email;
     profileEmail.textContent = user.email;
-    profilePic.src = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent((user.displayName||user.email).split(" ").map(n=>n[0]).join(""))}&background=0078d7&color=fff&size=100`;
+    // Use default avatar if no photoURL
+    profilePic.src = user.photoURL || DEFAULT_AVATAR;
     updateName.value = user.displayName || "";
     setPresenceForUser(user);
     loadActivity(user.uid);
@@ -741,6 +1052,8 @@ onAuthStateChanged(auth, user => {
     notifyAuth("Not signed in");
     authCard.style.display = 'block'; appCard.style.display = 'none';
     userArea.style.display = 'none'; authButtons.style.display = 'flex';
+    // Reset profile pic to default when signed out
+    profilePic.src = DEFAULT_AVATAR;
   }
 });
 

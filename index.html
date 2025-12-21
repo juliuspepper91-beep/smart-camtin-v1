@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" href="icon/favicon-16x16.png">
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>📸 Smart Camtin — Enhanced Dashboard</title>
@@ -536,6 +542,14 @@ body.light .auth-hero-content h2 {
 <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.21.0/index.min.js"></script>
 
 <script type="module">
+  if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js")
+      .then(() => console.log("Service Worker registered"))
+      .catch(err => console.error("SW error:", err));
+  });
+}
+
 /* ===========================
    Firebase & app initialization
    =========================== */

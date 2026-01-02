@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" href="icon/favicon-16x16.png">
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>📸 Smart Camtin — Enhanced Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0078d7">
+
+<!-- Tailwind CDN (optional — you're using existing CSS but Tailwind is available if you want to add utilities) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+:root {
+  --primary: #0078d7;
+  --primary-dark: #005fa3;
+  --bg-dark: #111;
+  --bg-light: #f7f7f7;
+  --card-dark: rgba(255,255,255,0.05);
+  --card-light: rgba(255,255,255,0.9);
+  --text-light: #fff;
+  --text-dark: #111;
+}
+*, *::before, *::after { box-sizing: border-box; transition: all 0.22s ease; }
+body {
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  background: linear-gradient(180deg, #151515, #2b2b2b);
+  color: var(--text-light);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body.light {
+  background: linear-gradient(180deg, #fafafa, #e2e2e2);
+  color: var(--text-dark);
+}
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+body.light nav { background: rgba(255,255,255,0.9); }
+nav h1 { margin:0; font-size:20px; display:flex; align-items:center; gap:8px; }
+.nav-right { display:flex; align-items:center; gap:12px; }
+.btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  background: var(--primary);
+  color: #fff;
+  transition: 0.18s ease;
+}
+.btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn.secondary { background: transparent; border: 1px solid rgba(255,255,255,0.12); color: inherit; }
+main {
+  margin-top: 90px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:24px 12px;
+  gap:24px;
+}
+.card {
+  background: var(--card-dark);
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+  max-width: 900px;
+  width: 100%;
+}
+body.light .card {
+  background: var(--card-light);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+.auth-wrap { display:flex; gap:24px; flex-wrap:wrap; justify-content:center; }
+.auth-box {
+  background: rgba(255,255,255,0.03);
+  padding:20px;
+  border-radius:12px;
+  min-width:280px;
+  flex:1;
+  max-width:360px;
+}
+body.light .auth-box { background: rgba(255,255,255,0.65); }
+.auth-box h3 { margin-top:0; margin-bottom:12px; font-weight:600; }
+label { display:block; font-size:13px; margin-top:10px; opacity:0.8; }
+input { width:100%; padding:10px 12px; margin-top:4px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); background:transparent; color:inherit; }
+body.light input { border-color:#ccc; color:#111; }
+.small { font-size:13px; opacity:0.75; }
+.profile-container { display:flex; align-items:center; gap:18px; margin-top:16px; }
+.profile-container img { width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); }
+.activity-feed { margin-top:20px; max-height:200px; overflow-y:auto; border-top:1px solid rgba(255,255,255,0.12); padding-top:12px; }
+.activity-item { padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:14px; opacity:0.85; }
+.chat-card { margin-top:20px; display:flex; flex-direction:column; max-height:520px; }
+.messages { flex:1; overflow-y:auto; padding:10px; border:1px solid rgba(255,255,255,0.12); border-radius:10px; background:rgba(0,0,0,0.08); margin-bottom:6px; min-height:180px; }
+.message { display:flex; align-items:flex-start; gap:8px; margin-bottom:10px; }
+.message .meta { font-size:12px; opacity:0.7; margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+.message img { width:36px; height:36px; border-radius:50%; object-fit:cover; }
+.message .content { background: rgba(0,0,0,0.18); padding:8px 12px; border-radius:10px; max-width:78%; word-wrap:break-word; position:relative; }
+body.light .messages .message .content { background: rgba(255,255,255,0.6); }
+.message-actions { display:flex; gap:6px; margin-left:4px; opacity:0; transition: opacity 0.15s ease; }
+.message.own .content { border:1px solid rgba(0,120,215,0.5); }
+.message:hover .message-actions { opacity:1; }
+.message-action-btn { font-size:11px; padding:2px 6px; border-radius:999px; border:none; cursor:pointer; background:rgba(255,255,255,0.1); color:inherit; }
+.message-action-btn:hover { background:rgba(255,255,255,0.22); }
+.message-edited-tag { font-size:10px; opacity:0.6; margin-left:4px; }
+input.chat-input { flex:1; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); background:transparent; color:inherit; }
+body.light input.chat-input { border-color:#ccc; color:#111; }
+.chat-controls { display:flex; gap:8px; align-items:center; }
+#typing-indicator { font-size:13px; margin-bottom:6px; opacity:0.8; min-height:18px; }
+.footer-row { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-top:12px; }
+#loader { position:fixed; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:606; background: var(--bg-dark); color: var(--text-light); z-index:999; }
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--primary); color:#fff; padding:10px 20px; border-radius:10px; opacity:0; transition:0.5s ease; pointer-events:none; z-index:9999; }
+.toast.show { opacity:1; pointer-events:auto; }
+.password-toggle { position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:inherit; }
+.skeleton { background: linear-gradient(-90deg, #ddd 0%, #eee 50%, #ddd 100%); background-size: 400% 400%; animation: shimmer 1.4s ease infinite; border-radius:8px; }
+.online-user { cursor:pointer; display:inline-block; padding:4px 8px; margin-right:6px; margin-bottom:6px; border-radius:8px; background:rgba(255,255,255,0.04); }
+.online-user:hover { transform:translateY(-2px); background:rgba(0,0,0,0.14); }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+@media (max-width:820px) { .auth-wrap { flex-direction:column; gap:16px; } .profile-container { flex-direction:column; gap:12px; } nav h1 { font-size:18px; } .card { padding:16px; } }
+/* =========================
+   📷 Camera App Styles
+   ========================= */
+#camera-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:2000; display:none; flex-direction:column; }
+#cam-video-container { flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#111; }
+#cam-video { width:100%; height:100%; object-fit:cover; transform: scaleX(-1); transition: filter 0.3s ease; } 
+#cam-video.rear { transform: scaleX(1); }
+.cam-controls { padding:24px 20px 40px; display:flex; justify-content:space-around; align-items:center; background:rgba(0,0,0,0.6); backdrop-filter:blur(12px); }
+.cam-btn { background:rgba(255,255,255,0.15); border:none; color:#fff; width:48px; height:48px; border-radius:50%; font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:0.2s; }
+.cam-btn:hover { background:rgba(255,255,255,0.3); transform:scale(1.1); }
+.cam-btn.active { background: var(--primary); color:#fff; }
+#shutter-btn { width:72px; height:72px; border:4px solid #fff; background:transparent; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+#shutter-inner { width:56px; height:56px; background:#fff; border-radius:50%; transition:0.15s; }
+#shutter-btn:active #shutter-inner { transform:scale(0.85); background: #eee; }
+.filter-scroll { position:absolute; bottom:20px; left:0; width:100%; overflow-x:auto; display:flex; gap:12px; padding:0 20px; scrollbar-width:none; z-index:10; }
+.filter-scroll::-webkit-scrollbar { display:none; }
+.filter-item { min-width:70px; height:70px; background:rgba(0,0,0,0.5); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; color:#fff; cursor:pointer; border:2px solid rgba(255,255,255,0.3); flex-direction:column; gap:2px; text-transform:uppercase; letter-spacing:0.5px; transition:0.2s; overflow:hidden; }
+.filter-item span { margin-top: 14px; font-weight:600; text-shadow:0 1px 3px #000; }
+.filter-item.active { border-color:var(--primary); transform:translateY(-10px) scale(1.1); box-shadow:0 5px 15px rgba(0,0,0,0.5); }
+.flash-effect { position:absolute; top:0; left:0; width:100%; height:100%; background:#fff; opacity:0; pointer-events:none; transition:opacity 0.1s; z-index:20; }
+#countdown-display { position:absolute; font-size:120px; font-weight:bold; color:#fff; text-shadow:0 0 20px rgba(0,0,0,0.8); display:none; z-index:30; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes popIn { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.2)} 100%{transform:scale(1);opacity:1} }
+
+/* Filter Classes */
+.f-normal { filter: none; }
+.f-bw { filter: grayscale(1); }
+.f-sepia { filter: sepia(0.6); }
+.f-warm { filter: sepia(0.3) saturate(1.4); }
+.f-cool { filter: hue-rotate(180deg) saturate(0.8); }
+.f-dramatic { filter: contrast(1.4) brightness(0.9); }
+.f-cyber { filter: saturate(2) hue-rotate(20deg) contrast(1.2); }
+.f-vintage { filter: sepia(0.4) contrast(1.2) brightness(0.9) saturate(0.8); }
+
+/* Video Recording Styles */
+#recording-timer { position:absolute; top:20px; left:50%; transform:translateX(-50%); background:rgba(200,0,0,0.85); padding:6px 14px; border-radius:20px; color:#fff; font-weight:600; font-size:14px; display:none; align-items:center; gap:8px; z-index:50; box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+#recording-timer.active { display:flex; animation: pulseRed 1s infinite; }
+#rec-dot { width:10px; height:10px; background:#fff; border-radius:50%; }
+.mode-switch-container { position:absolute; bottom:130px; left:0; width:100%; display:flex; justify-content:center; gap:16px; z-index:40; pointer-events:none; }
+.mode-btn { background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); padding:8px 20px; border-radius:24px; color:#ccc; font-size:13px; font-weight:600; border:1px solid rgba(255,255,255,0.15); cursor:pointer; pointer-events:auto; transition:0.25s cubic-bezier(0.4, 0, 0.2, 1); letter-spacing:0.5px; text-transform:uppercase; }
+.mode-btn:hover { background:rgba(255,255,255,0.1); color:#fff; }
+.mode-btn.active { background:var(--primary); color:#fff; border-color:var(--primary); box-shadow:0 4px 15px rgba(0,120,215,0.4); transform:scale(1.05); }
+/* Shutter modifications for video */
+.shutter-video #shutter-inner { background:#ff3b30; border-radius:6px; transform:scale(0.5); transition:0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.shutter-recording { border-color:rgba(255, 59, 48, 0.5) !important; animation: pulseBorder 1.5s infinite; }
+@keyframes pulseRed { 0%{opacity:1;} 50%{opacity:0.8;} 100%{opacity:1;} }
+@keyframes pulseBorder { 0%{box-shadow:0 0 0 0px rgba(255, 59, 48, 0.4);} 70%{box-shadow:0 0 0 15px rgba(255, 59, 48, 0);} 100%{box-shadow:0 0 0 0px rgba(255, 59, 48, 0);} }
+
+/* =========================
+   🎆 New Year 2026 Styles
+   ========================= */
+
+/* New Year Glow */
+.newyear-glow {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4),
+              0 0 40px rgba(192, 192, 192, 0.2);
+}
+
+/* New Year Colors */
+:root {
+  --ny-gold: #FFD700;
+  --ny-silver: #C0C0C0;
+  --ny-dark: #000000;
+}
+
+/* Navbar festive border */
+body.newyear nav {
+  border-bottom: 2px solid var(--ny-gold);
+}
+
+/* New Year button gradient */
+body.newyear .btn {
+  background: linear-gradient(135deg, #FFD700, #DAA520);
+  color: #000;
+}
+body.newyear .btn:hover {
+  filter: brightness(1.1);
+}
+
+/* Fireworks canvas */
+#fireworks-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 1; /* Low z-index so it stays behind UI */
+}
+
+/* Ensure content stays above background effects */
+main {
+  position: relative;
+  z-index: 10;
+}
+.card {
+  position: relative;
+  z-index: 10;
+}
+
+/* 2026 Floating Badge */
+#newyear-badge {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  background: rgba(0,0,0,0.6);
+  color: #FFD700;
+  padding: 10px 16px;
+  border-radius: 50px;
+  border: 1px solid #FFD700;
+  cursor: pointer;
+  z-index: 9999;
+  animation: floatBadge 3s ease-in-out infinite;
+  backdrop-filter: blur(4px);
+}
+
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+/* =========================
+   Auth Hero Design Section
+   ========================= */
+.auth-hero {
+  display: flex;
+  gap: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  min-height: 280px;
+}
+
+body.light .auth-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+}
+
+.auth-hero-image {
+  flex: 0 0 45%;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.5s ease;
+}
+
+.auth-hero:hover .auth-hero-image img {
+  transform: scale(1.05);
+}
+
+.auth-hero-image::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 60%, rgba(26,26,46,0.9) 100%);
+}
+
+body.light .auth-hero-image::after {
+  background: linear-gradient(90deg, transparent 60%, rgba(102,126,234,0.8) 100%);
+}
+
+.auth-hero-content {
+  flex: 1;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.auth-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  width: fit-content;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.auth-hero-badge .dot {
+  width: 8px;
+  height: 8px;
+  background: #00ff88;
+  border-radius: 50%;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.auth-hero-content h2 {
+  margin: 0 0 12px 0;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.3;
+  background: linear-gradient(135deg, #fff 0%, #a8edea 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body.light .auth-hero-content h2 {
+  background: linear-gradient(135deg, #fff 0%, #ffecd2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-hero-content p {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  opacity: 0.9;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.85);
+}
+
+.auth-hero-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.auth-hero-features span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.1);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.auth-hero-features span:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+}
+
+.auth-hero-features span .icon {
+  font-size: 16px;
+}
+
+/* Decorative elements */
+.auth-hero-content::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(0,120,215,0.3) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* Mobile view */
+@media (max-width: 700px) {
+  .auth-hero {
+    flex-direction: column;
+    min-height: auto;
+  }
+  
+  .auth-hero-image {
+    flex: 0 0 200px;
+    max-height: 200px;
+  }
+  
+  .auth-hero-image::after {
+    background: linear-gradient(180deg, transparent 50%, rgba(26,26,46,0.95) 100%);
+  }
+  
+  body.light .auth-hero-image::after {
+    background: linear-gradient(180deg, transparent 50%, rgba(102,126,234,0.9) 100%);
+  }
+  
+  .auth-hero-content {
+    padding: 24px 20px;
+    text-align: center;
+  }
+  
+  .auth-hero-content h2 {
+    font-size: 22px;
+  }
+  
+  .auth-hero-badge {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .auth-hero-features {
+    justify-content: center;
+  }
+}
+
+/* Legacy support */
+.auth-image-design {
+  display: none;
+}
+
+</style>
+</head>
+<body>
+<div id="loader">🚀 Loading Smart Camtin...</div>
+<div id="toast" class="toast"></div>
+<canvas id="fireworks-canvas"></canvas>
+<div id="newyear-badge" title="Welcome 2026!">🎉 2026</div>
+
+<nav>
+  <h1>📸 Smart Camtin</h1>
+  <div class="nav-right">
+    <button id="open-camera" class="btn secondary" style="margin-right:6px;">📷</button>
+    <button id="mode-toggle" class="btn secondary" title="Toggle Light/Dark">🌙</button>
+    <div id="user-area" style="display:none;align-items:center; gap:8px;">
+      <div id="user-name" class="small">Hi, user</div>
+      <button id="signout" class="btn">Sign out</button>
+    </div>
+    <div id="auth-buttons" style="display:none;">
+      <button id="open-auth" class="btn">Sign In / Sign Up</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <!-- AUTH CARD -->
+  <div id="auth-card" class="card">
+    <!-- Beautiful Auth Hero Section -->
+    <div class="auth-hero">
+      <div class="auth-hero-image">
+        <img 
+          src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=800&fit=crop&crop=faces" 
+          alt="Welcome to Smart Camtin"
+        />
+      </div>
+      <div class="auth-hero-content">
+        <div class="auth-hero-badge">
+          <span class="dot"></span>
+          <span>Join 10,000+ Users</span>
+        </div>
+        <h2>Welcome to Smart Camtin ✨</h2>
+        <p>
+          Connect, chat, and share moments with friends in real-time. 
+          Celebrate the arrival of 2026 while you talk, and experience a beautifully designed platform built for the future.
+        </p>
+        <div class="auth-hero-features">
+          <span><span class="icon">💬</span> Real-time Chat</span>
+          <span><span class="icon">📸</span> Share Photos</span>
+          <span><span class="icon">🟢</span> See Who's Online</span>
+          <span><span class="icon">✏️</span> Message Editing/Deletion</span>
+          <span><span class="icon">🔒</span> Secure &amp; Private</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Season 1 Model: Ash Spotlight -->
+    <div class="card" style="margin-top:16px; background: linear-gradient(135deg, rgba(15,52,96,0.9), rgba(118,75,162,0.9)); display:flex; flex-wrap:wrap; gap:18px; align-items:center; border-radius:18px; overflow:hidden;">
+      <div style="flex:0 0 120px; display:flex; justify-content:center; padding:14px 0 14px 14px;">
+        <img 
+          src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?w=400&h=400&fit=crop&crop=faces" 
+          alt="Season 1 Model Ash" 
+          style="width:110px; height:110px; border-radius:18px; object-fit:cover; box-shadow:0 10px 25px rgba(0,0,0,0.35); border:2px solid rgba(255,255,255,0.7);" 
+        />
+      </div>
+      <div style="flex:1; padding:14px 18px 14px 0; min-width:220px; color:#fff;">
+        <div style="font-size:12px; opacity:0.85; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:4px;">Season 1 Model</div>
+        <h3 style="margin:0 0 6px 0; font-size:20px; font-weight:600;">Ash — The 2026 Icon</h3>
+        <p style="margin:0 0 6px 0; font-size:13px; opacity:0.9; line-height:1.6;">
+          Ash welcomes you to Smart Camtin Season 1. Share your stories, react with emojis, and
+          connect with friends worldwide as we kick off a spectacular new year.
+        </p>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center; flex-wrap:wrap; margin-top:8px;">
+      <div>
+        <h2 style="margin:0 0 6px 0">Get Started</h2>
+        <div class="small">Create an account or sign in to access your dashboard.</div>
+      </div>
+      <div id="auth-status" class="small">Not signed in</div>
+    </div>
+    <div class="auth-wrap" style="margin-top:20px;">
+      <div class="auth-box">
+        <h3>Sign up</h3>
+        <label>Email</label><input id="su-email" type="email" placeholder="you@example.com">
+        <label>Password</label>
+        <div style="position:relative;"><input id="su-pass" type="password" placeholder="Enter password"><button type="button" class="password-toggle" onclick="togglePassword('su-pass')">👁️</button></div>
+        <button id="btn-signup" class="btn" style="width:100%; margin-top:12px;">Create Account</button>
+      </div>
+      <div class="auth-box">
+        <h3>Sign in</h3>
+        <label>Email</label><input id="si-email" type="email" placeholder="you@example.com">
+        <label>Password</label>
+        <div style="position:relative;"><input id="si-pass" type="password" placeholder="Password"><button type="button" class="password-toggle" onclick="togglePassword('si-pass')">👁️</button></div>
+        <label style="margin-top:8px;"><input type="checkbox" id="remember-me"> Remember Me</label>
+        <button id="btn-signin" class="btn" style="width:100%; margin-top:12px;">Sign In</button>
+        <button id="btn-google" class="btn secondary" style="width:100%; margin-top:10px;">Sign in with Google</button>
+        <button id="reset-pass" class="btn secondary" style="width:100%; margin-top:10px;">Reset Password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="app" class="card" style="display:none;">
+    <h2>Dashboard</h2>
+    <div class="profile-container">
+      <img id="profile-pic" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile Avatar" loading="lazy">
+      <div style="flex:1;">
+        <label>Display Name</label>
+        <input id="update-name" type="text" placeholder="Your Name">
+        <button id="update-profile" class="btn" style="margin-top:8px;">Update Profile</button>
+        <p class="small">Email: <span id="profile-email"></span></p>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="card" style="margin-top:20px;">
+      <h3>📝 Recent Activity</h3>
+      <div id="activity-feed" class="activity-feed"><div class="activity-item skeleton">Loading activities...</div></div>
+    </div>
+
+    <!-- New Year Resolutions -->
+    <div class="card" style="margin-top:20px; border:1px solid var(--ny-gold);">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0;">🎯 2026 Resolutions</h3>
+        <span id="countdown-timer" class="small" style="font-family:monospace; font-size:14px; color:var(--ny-gold);"></span>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:12px;">
+        <input id="new-resolution" type="text" placeholder="I will..." style="flex:1;">
+        <button id="add-resolution" class="btn">Add</button>
+      </div>
+      <ul id="resolutions-list" style="list-style:none; padding:0; margin:16px 0 0 0;"></ul>
+    </div>
+
+    <!-- Chat -->
+    <div class="card chat-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+        <h3>💬 Chat</h3>
+        <div>
+          <div id="online-count" class="small">0 online</div>
+          <div id="online-users" class="small" title="Click a user to reply" style="max-width:320px; overflow:auto; padding-top:6px;"></div>
+        </div>
+      </div>
+
+      <div id="messages" class="messages">
+        <div class="skeleton">Loading messages...</div>
+      </div>
+
+      <div id="typing-indicator">&nbsp;</div>
+
+      <div class="chat-controls" style="position:relative;">
+        <input id="chat-input" class="chat-input" placeholder="Type a message...">
+        <button id="emoji-btn" class="btn secondary">😊</button>
+        <button id="upload-btn" class="btn secondary" title="Send Image">📷</button>
+        <input id="image-upload" type="file" accept="image/*" style="display:none;">
+        <button id="send-msg" class="btn">Send</button>
+      </div>
+
+      <div id="suggestions" class="small" style="margin-top:8px; color:var(--primary);"></div>
+    </div>
+
+    <div class="footer-row">
+      <p style="margin:0;">🎉 You are signed in successfully!</p>
+      <p class="small">Version: v1.0.5</p>
+    </div>
+  </div>
+
+  <footer>© 2025 Smart Camtin — Bommmack</footer>
+</main>
+
+<!-- Camera Overlay -->
+<div id="camera-overlay">
+  <div id="cam-video-container">
+    <video id="cam-video" autoplay playsinline muted></video>
+    <div id="cam-flash" class="flash-effect"></div>
+    <div id="countdown-display">3</div>
+    <div id="recording-timer"><div id="rec-dot"></div><span id="rec-time">00:00</span></div>
+    <div class="filter-scroll" id="filter-list">
+      <!-- Filter items will be injected here -->
+    </div>
+  </div>
+  <div class="mode-switch-container">
+    <button class="mode-btn active" id="mode-photo">Photo</button>
+    <button class="mode-btn" id="mode-video">Video</button>
+  </div>
+  <div class="cam-controls">
+    <button id="close-cam" class="cam-btn" title="Close">✕</button>
+    <button id="switch-cam" class="cam-btn" title="Switch Camera">🔄</button>
+    <button id="shutter-btn" title="Take Photo"><div id="shutter-inner"></div></button>
+    <button id="cam-timer" class="cam-btn" title="Timer">⏱️</button>
+    <button id="cam-gallery" class="cam-btn" title="Download Last Photo"><img id="last-photo" src="" style="width:100%;height:100%;object-fit:cover;display:none;"></button>
+  </div>
+</div>
+
+<!-- emoji-picker element -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.21.0/index.min.js"></script>
+
+<script type="module">
+  if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js")
+      .then(() => console.log("Service Worker registered"))
+      .catch(err => console.error("SW error:", err));
+  });
+}
+
+/* ===========================
+   Firebase & app initialization
+   =========================== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut, sendPasswordResetEmail, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, setDoc, enableIndexedDbPersistence, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { getDatabase, ref as rdbRef, set as rdbSet, onDisconnect, onValue as rdbOnValue, serverTimestamp as rdbServerTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey:"AIzaSyDwT1JTnw6rqyTaO1sbZXD624_HblKMPZM",
+  authDomain:"smartcamtin-a7e07.firebaseapp.com",
+  projectId:"smartcamtin-a7e07",
+  storageBucket: "smartcamtin-a7e07.appspot.com",
+  appId:"1:397311969979:web:d08a7a063ba1683e16f79e",
+  databaseURL: "https://smartcamtin-a7e07-default-rtdb.firebaseio.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const rdb = getDatabase(app);
+const storage = getStorage(app);
+
+/* enable offline persistence for Firestore */
+enableIndexedDbPersistence(db).catch(err => {
+  console.warn("Persistence error:", err.code || err);
+});
+
+/* ===========================
+   DOM helpers & elements
+   =========================== */
+const $ = id => document.getElementById(id);
+const authCard = $('auth-card'), appCard = $('app'), authStatus = $('auth-status');
+const signoutBtn = $('signout'), userArea = $('user-area'), authButtons = $('auth-buttons'), openAuthBtn = $('open-auth');
+const userNameEl = $('user-name'), profileEmail = $('profile-email'), profilePic = $('profile-pic');
+const suEmail = $('su-email'), suPass = $('su-pass'), siEmail = $('si-email'), siPass = $('si-pass');
+const btnSignup = $('btn-signup'), btnSignin = $('btn-signin'), btnGoogle = $('btn-google');
+const modeToggle = $('mode-toggle'), loader = $('loader'), toast = $('toast');
+const rememberMe = $('remember-me'), resetPassBtn = $('reset-pass');
+const updateName = $('update-name'), updateProfileBtn = $('update-profile');
+const activityFeed = $('activity-feed');
+const messagesEl = $('messages'), chatInput = $('chat-input'), sendMsgBtn = $('send-msg'), emojiBtn = $('emoji-btn'), typingIndicator = $('typing-indicator');
+const uploadBtn = $('upload-btn'), imageUpload = $('image-upload'), suggestionsEl = $('suggestions'), onlineCountEl = $('online-count'), onlineUsersEl = $('online-users');
+
+// Default profile avatar
+const DEFAULT_AVATAR = 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+
+function showToast(msg){ toast.textContent = msg; toast.classList.add('show'); setTimeout(()=>toast.classList.remove('show'), 2500); }
+function togglePassword(id){ const input=$(id); input.type = input.type==='password' ? 'text' : 'password'; }
+window.addEventListener('load', ()=>setTimeout(()=>loader.style.display='none',700));
+
+/* ===========================
+   Theme (system auto + toggle)
+   =========================== */
+const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+if(!localStorage.getItem('theme') && prefersLight) { document.body.classList.add('light'); modeToggle.textContent = '🌞'; }
+if(localStorage.getItem('theme')==='light'){ document.body.classList.add('light'); modeToggle.textContent='🌞'; }
+modeToggle.onclick = () => {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  modeToggle.textContent = isLight ? '🌞' : '🌙';
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+};
+
+/* ===========================
+   Permission: Desktop notifications
+   =========================== */
+if ("Notification" in window && Notification.permission !== "granted") {
+  Notification.requestPermission().catch(()=>{/* ignore */});
+}
+function showDesktopNotification(title, body){
+  if(!("Notification" in window)) return;
+  if(Notification.permission === "granted"){
+    try { new Notification(title, { body, icon: profilePic.src }); } catch(e){ console.warn("Notification error", e); }
+  }
+}
+
+/* ===========================
+   Presence — Realtime DB (online/offline) + clickable list
+   =========================== */
+let presenceRef = null;
+function setPresenceForUser(user){
+  try {
+    if(!user) return;
+    presenceRef = rdbRef(rdb, `status/${user.uid}`);
+    const onlinePayload = { state: 'online', name: user.displayName || user.email, last_changed: rdbServerTimestamp() };
+    const offlinePayload = { state: 'offline', name: user.displayName || user.email, last_changed: rdbServerTimestamp() };
+    onDisconnect(presenceRef).set(offlinePayload).then(() => rdbSet(presenceRef, onlinePayload));
+
+    // listen for online users and show names (clickable)
+    const statusColRef = rdbRef(rdb, 'status');
+    rdbOnValue(statusColRef, snap => {
+      const data = snap.val() || {};
+      const users = [];
+      for(const [uid, val] of Object.entries(data)){
+        if(!val) continue;
+        if(val.state === 'online') users.push({ uid, name: val.name || 'Unknown' });
+      }
+
+      // update count
+      onlineCountEl.textContent = `${users.length} online`;
+
+      // update clickable list
+      onlineUsersEl.innerHTML = '';
+      if(users.length === 0){
+        onlineUsersEl.textContent = 'No one is online';
+      } else {
+        users.forEach(u => {
+          // don't show myself in the list
+          if(auth.currentUser && u.uid === auth.currentUser.uid) return;
+          const el = document.createElement('span');
+          el.className = 'online-user';
+          el.title = `Click to reply to ${u.name}`;
+          el.textContent = u.name;
+          el.dataset.uid = u.uid;
+          el.dataset.name = u.name;
+          el.addEventListener('click', () => {
+            // prefill chat with mention; you can change this to open private chat flow
+            chatInput.value = `@${u.name} `;
+            chatInput.focus();
+            showToast(`Replying to ${u.name}`);
+          });
+          onlineUsersEl.appendChild(el);
+        });
+        // if all users were filtered (only me online), show message
+        if(onlineUsersEl.children.length === 0) onlineUsersEl.textContent = 'No one else online';
+      }
+    });
+  } catch(e) { console.warn("Presence error", e); }
+}
+
+/* ===========================
+   Activity logging helper
+   =========================== */
+function notifyAuth(t){ authStatus.textContent = t; }
+async function logActivity(action){
+  const user = auth.currentUser;
+  if(!user) return;
+  try{
+    await addDoc(collection(db,"activity"),{ uid:user.uid, action, email:user.email, timestamp: serverTimestamp() });
+  }catch(e){ console.error("Activity log error:", e); }
+}
+
+/* ===========================
+   Load activity feed
+   =========================== */
+function loadActivity(uid){
+  const q = query(collection(db,"activity"), orderBy("timestamp","desc"), limit(10));
+  onSnapshot(q, snapshot => {
+    activityFeed.innerHTML = "";
+    snapshot.forEach(d => {
+      const data = d.data();
+      const item = document.createElement("div");
+      item.className = "activity-item";
+      const time = data.timestamp ? (data.timestamp.toDate ? new Date(data.timestamp.toDate()).toLocaleTimeString() : new Date().toLocaleTimeString()) : '';
+      item.textContent = `[${time}] ${data.action}`;
+      activityFeed.appendChild(item);
+    });
+  });
+}
+
+/* ===========================
+   Smart reply suggestions (local)
+   =========================== */
+const smartReplies = ["Nice!", "On my way 🚀", "Got it 👍", "Haha 😂", "Love it 🔥", "Sure thing", "Working on it"];
+let suggestionTimeout;
+chatInput.addEventListener('input', () => {
+  clearTimeout(suggestionTimeout);
+  const val = chatInput.value.trim();
+  if(val.length > 2){
+    suggestionTimeout = setTimeout(() => {
+      const s = smartReplies[Math.floor(Math.random()*smartReplies.length)];
+      suggestionsEl.textContent = `Suggested: ${s} — click to use`;
+      suggestionsEl.style.cursor = 'pointer';
+    }, 450);
+  } else {
+    suggestionsEl.textContent = '';
+    suggestionsEl.style.cursor = 'default';
+  }
+});
+suggestionsEl.addEventListener('click', () => {
+  if(suggestionsEl.textContent) {
+    const pick = suggestionsEl.textContent.replace('Suggested: ', '').split(' — ')[0];
+    chatInput.value += (chatInput.value ? ' ' : '') + pick;
+    suggestionsEl.textContent = '';
+  }
+});
+
+/* ===========================
+   Messages: load, seen, notifications, edit/delete
+   =========================== */
+async function renderMessage(change){
+  const data = change.doc.data();
+  const id = change.doc.id;
+  const isOwn = auth.currentUser && data.uid === auth.currentUser.uid;
+  const existing = document.querySelector(`.message[data-id="${id}"]`);
+  const avatar = data.avatarURL || DEFAULT_AVATAR;
+  const timeStr = data.timestamp && data.timestamp.toDate ? new Date(data.timestamp.toDate()).toLocaleTimeString() : '';
+  const container = existing || document.createElement('div');
+  container.className = 'message' + (isOwn ? ' own' : '');
+  container.dataset.id = id;
+
+  const editedTag = data.edited ? '<span class="message-edited-tag">(edited)</span>' : '';
+
+  container.innerHTML = `
+    <img src="${avatar}" alt="avatar">
+    <div style="display:flex;flex-direction:column;">
+      <div class="meta">
+        <strong>${data.name || 'Unknown'}</strong> · <span style="opacity:0.6">${timeStr}</span> ${data.seen ? ' · ✔' : ''}
+        ${isOwn ? '<div class="message-actions"><button class="message-action-btn" data-action="edit">Edit</button><button class="message-action-btn" data-action="delete">Delete</button></div>' : ''}
+      </div>
+      <div class="content">${data.message || ''} ${editedTag}</div>
+    </div>
+  `;
+
+  if(!existing) {
+    messagesEl.appendChild(container);
+  }
+
+  // Attach action handlers for own messages
+  if(isOwn) {
+    const editBtn = container.querySelector('button[data-action="edit"]');
+    const deleteBtn = container.querySelector('button[data-action="delete"]');
+    if(editBtn) {
+      editBtn.onclick = async () => {
+        const currentText = data.isImage ? '' : (data.plainText || data.message || '');
+        const newText = prompt('Edit your message:', currentText);
+        if(newText === null) return; // cancel
+        const trimmed = newText.trim();
+        if(!trimmed){
+          showToast('⚠️ Message cannot be empty');
+          return;
+        }
+        try{
+          await updateDoc(doc(db,'messages',id),{
+            message: trimmed,
+            plainText: trimmed,
+            edited: true
+          });
+          await logActivity('Edited a message');
+          showToast('✅ Message updated');
+        }catch(e){
+          console.error(e);
+          showToast('⚠️ Unable to edit message');
+        }
+      };
+    }
+    if(deleteBtn) {
+      deleteBtn.onclick = async () => {
+        if(!confirm('Delete this message for everyone?')) return;
+        try{
+          await updateDoc(doc(db,'messages',id),{
+            message: '<span style="opacity:0.6;font-style:italic;">This message was deleted</span>',
+            deleted: true
+          });
+          await logActivity('Deleted a message');
+          showToast('🗑 Message deleted');
+        }catch(e){
+          console.error(e);
+          showToast('⚠️ Unable to delete message');
+        }
+      };
+    }
+  }
+}
+
+async function loadMessages(){
+  const q = query(collection(db,"messages"), orderBy("timestamp","asc"), limit(200));
+  onSnapshot(q, snapshot => {
+    messagesEl.innerHTML = "";
+    snapshot.docChanges().forEach(async change => {
+      if(change.type === 'added' || change.type === 'modified'){
+        await renderMessage(change);
+
+        const data = change.doc.data();
+        const id = change.doc.id;
+
+        // Desktop notif & toast for messages from others
+        if(auth.currentUser && data.uid !== auth.currentUser.uid && change.type === 'added'){
+          showToast(`📨 New message from ${data.name}`);
+          const body = (data.plainText || data.message || 'Sent an image').replace(/<[^>]+>/g,'');
+          showDesktopNotification(`${data.name}`, `${body.slice(0,120)}`);
+        }
+
+        // mark as seen if it's not from me
+        if(auth.currentUser && data.uid !== auth.currentUser.uid && !data.seen){
+          setTimeout(async ()=> { // small delay to ensure UI rendered
+            try { await setDoc(doc(db, "messages", id), { seen: true }, { merge: true }); } catch(e){ console.warn("Mark seen error", e); }
+          }, 600);
+        }
+      }
+    });
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  });
+}
+
+/* ===========================
+   Send message (text)
+   =========================== */
+sendMsgBtn.onclick = async () => {
+  const msg = chatInput.value.trim();
+  if(!msg){ showToast("⚠️ Enter a message"); return;}
+  try{
+    const user = auth.currentUser;
+    if(!user) { showToast("⚠️ You must be signed in"); return; }
+    await addDoc(collection(db,"messages"),{
+      uid: user.uid,
+      name: user.displayName || user.email,
+      avatarURL: user.photoURL || DEFAULT_AVATAR,
+      message: msg,
+      plainText: msg,
+      timestamp: serverTimestamp(),
+      seen: false,
+      edited: false
+    });
+    chatInput.value = "";
+    suggestionsEl.textContent = '';
+  }catch(e){ showToast("⚠️ "+(e.message || e)); console.error(e); }
+};
+
+/* ===========================
+   Image upload & send
+   =========================== */
+uploadBtn.onclick = () => imageUpload.click();
+imageUpload.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const user = auth.currentUser;
+  if(!user){ showToast("⚠️ Sign in to send images"); return; }
+  const path = `chat_images/${user.uid}_${Date.now()}_${file.name.replace(/\s+/g,'_')}`;
+  const storageRef = sRef(storage, path);
+  showToast("Uploading image...");
+  try{
+    const snap = await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(snap.ref);
+    await addDoc(collection(db,"messages"), {
+      uid: user.uid,
+      name: user.displayName || user.email,
+      avatarURL: user.photoURL || DEFAULT_AVATAR,
+      message: `<img src="${url}" style="max-width:300px; border-radius:8px;">`,
+      timestamp: serverTimestamp(),
+      seen: false,
+      isImage: true
+    });
+    showToast("✅ Image sent");
+  }catch(err){ showToast("⚠️ Upload failed"); console.error(err); }
+});
+
+/* ===========================
+   Typing indicator (Firestore 'typing' collection)
+   =========================== */
+chatInput.addEventListener('input', async () => {
+  const user = auth.currentUser;
+  if(!user) return;
+  const typingRef = doc(db, 'typing', user.uid);
+  try{
+    await setDoc(typingRef, { name: user.displayName || user.email, isTyping: true, timestamp: serverTimestamp() });
+  }catch(e){ console.warn("Typing set error", e); }
+  clearTimeout(window.typingTimeout);
+  window.typingTimeout = setTimeout(async ()=>{
+    try{ await setDoc(typingRef, { name: user.displayName || user.email, isTyping: false, timestamp: serverTimestamp() }); } catch(e){/*ignore*/ }
+  }, 1600);
+});
+
+const typingCol = collection(db, 'typing');
+onSnapshot(typingCol, snap => {
+  let typingUsers = [];
+  snap.forEach(d => {
+    const data = d.data();
+    if(!auth.currentUser) return;
+    if(data.isTyping && d.id !== auth.currentUser.uid) typingUsers.push(data.name);
+  });
+  typingIndicator.textContent = typingUsers.length ? `${typingUsers.join(', ')} is typing...` : '';
+});
+
+/* ===========================
+   Auth events
+   =========================== */
+btnSignup.onclick = async () => {
+  try{
+    await createUserWithEmailAndPassword(auth, suEmail.value, suPass.value);
+    showToast("✅ Account created!");
+    logActivity("Signed up with email");
+  }catch(e){ showToast("⚠️ "+(e.message || e)); console.error(e); }
+};
+
+btnSignin.onclick = async () => {
+  try{
+    await signInWithEmailAndPassword(auth, siEmail.value, siPass.value);
+    showToast("✅ Signed in!");
+    logActivity("Signed in with email");
+    if(rememberMe.checked) localStorage.setItem('rememberedEmail', siEmail.value); else localStorage.removeItem('rememberedEmail');
+  }catch(e){ showToast("⚠️ "+(e.message || e)); console.error(e); }
+};
+
+btnGoogle.onclick = async () => {
+  try{
+    await signInWithPopup(auth, new GoogleAuthProvider());
+    showToast("✅ Google sign-in success!");
+    logActivity("Signed in with Google");
+  }catch(e){ showToast("⚠️ "+(e.message || e)); console.error(e); }
+};
+
+/* ===========================
+   Sign Out Handler - Fixed & Reliable
+   =========================== */
+async function handleSignOut(e) {
+  if(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  
+  console.log("Sign out initiated");
+  showToast("Signing out...");
+  
+  // Immediately reset UI first for instant feedback
+  resetToSignInPage();
+  
+  try {
+    // Set presence to offline before signing out
+    if(presenceRef) {
+      try {
+        await rdbSet(presenceRef, { state: 'offline', last_changed: rdbServerTimestamp() });
+      } catch(presErr) {
+        console.warn("Presence update error:", presErr);
+      }
+    }
+    
+    // Sign out from Firebase Auth
+    await signOut(auth);
+    console.log("Firebase signOut completed successfully");
+    
+  } catch(err) {
+    console.error("Sign out error:", err);
+  }
+}
+
+function resetToSignInPage() {
+  console.log("Resetting UI to sign in page...");
+  
+  // Show auth card (sign in/sign up)
+  if(authCard) authCard.style.display = 'block'; 
+  if(appCard) appCard.style.display = 'none';
+  
+  // Update nav buttons
+  if(userArea) userArea.style.display = 'none'; 
+  if(authButtons) authButtons.style.display = 'flex';
+  
+  // Update status
+  notifyAuth("Not signed in");
+  
+  // Reset profile picture to default
+  if(profilePic) profilePic.src = DEFAULT_AVATAR;
+  
+  // Clear user-specific data
+  if(messagesEl) messagesEl.innerHTML = '<div class="skeleton">Loading messages...</div>';
+  if(activityFeed) activityFeed.innerHTML = '<div class="activity-item skeleton">Loading activities...</div>';
+  if(onlineUsersEl) onlineUsersEl.innerHTML = '';
+  if(onlineCountEl) onlineCountEl.textContent = '0 online';
+  if(userNameEl) userNameEl.textContent = 'Hi, user';
+  if(profileEmail) profileEmail.textContent = '';
+  if(updateName) updateName.value = '';
+  
+  // Scroll to top to show sign in form
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  showToast("✅ You have been signed out!");
+  console.log("UI reset completed");
+}
+
+// Attach sign out event - use only addEventListener for reliability
+if(signoutBtn) {
+  signoutBtn.addEventListener('click', handleSignOut);
+  console.log("Sign out button event attached");
+}
+
+openAuthBtn.onclick = () => authCard.style.display = authCard.style.display === 'none' ? 'block' : 'none';
+
+resetPassBtn.onclick = async () => {
+  if(!siEmail.value){ showToast("⚠️ Enter your email"); return; }
+  try{ await sendPasswordResetEmail(auth, siEmail.value); showToast("✅ Reset email sent!"); logActivity("Requested password reset"); } catch(e){ showToast("⚠️ "+(e.message||e)); }
+};
+
+updateProfileBtn.onclick = async () => {
+  try{
+    await updateProfile(auth.currentUser, { displayName: updateName.value });
+    showToast("✅ Profile updated!");
+    logActivity("Updated profile");
+    // refresh UI
+    onAuthStateChanged(auth, auth.currentUser);
+  }catch(e){ showToast("⚠️ "+(e.message || e)); }
+};
+
+if(localStorage.getItem('rememberedEmail')) siEmail.value = localStorage.getItem('rememberedEmail');
+
+/* ===========================
+   Auth state observer
+   =========================== */
+onAuthStateChanged(auth, user => {
+  if(user){
+    notifyAuth("Signed in");
+    authCard.style.display = 'none'; appCard.style.display = 'block';
+    userArea.style.display = 'flex'; authButtons.style.display = 'none';
+    userNameEl.textContent = user.displayName || user.email;
+    profileEmail.textContent = user.email;
+    // Use default avatar if no photoURL
+    profilePic.src = user.photoURL || DEFAULT_AVATAR;
+    updateName.value = user.displayName || "";
+    setPresenceForUser(user);
+    loadActivity(user.uid);
+    loadMessages();
+    loadResolutions(user);
+  } else {
+    notifyAuth("Not signed in");
+    authCard.style.display = 'block'; appCard.style.display = 'none';
+    userArea.style.display = 'none'; authButtons.style.display = 'flex';
+    // Reset profile pic to default when signed out
+    profilePic.src = DEFAULT_AVATAR;
+  }
+});
+
+/* ===========================
+   Emoji picker (in-place)
+   =========================== */
+let picker;
+emojiBtn.addEventListener('click', () => {
+  if(!picker){
+    picker = document.createElement('emoji-picker');
+    picker.style.position = 'absolute';
+    picker.style.bottom = '60px';
+    picker.style.right = '12px';
+    picker.style.zIndex = 9999;
+    document.body.appendChild(picker);
+    picker.addEventListener('emoji-click', event => {
+      chatInput.value += event.detail.unicode;
+      picker.style.display = 'none';
+      chatInput.focus();
+    });
+  }
+  picker.style.display = picker.style.display === 'none' || !picker.style.display ? 'block' : 'none';
+});
+
+/* ===========================
+   Focus shortcuts
+   =========================== */
+chatInput.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsgBtn.click(); }
+});
+
+/* ===========================
+   Initial UI tweaks
+   =========================== */
+setTimeout(()=>{ loader.style.display='none'; }, 700);
+
+/* ===========================
+   Countdown & Resolutions
+   =========================== */
+function updateCountdown() {
+  const timerEl = document.getElementById("countdown-timer");
+  if (!timerEl) return;
+  const now = new Date();
+  const target = new Date("January 1, 2026 00:00:00");
+  const diff = target - now;
+  if (diff <= 0) {
+    timerEl.textContent = "Happy 2026! 🎆";
+  } else {
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    timerEl.textContent = `T-${d}d ${h}h to 2026`;
+  }
+}
+setInterval(updateCountdown, 60000);
+setTimeout(updateCountdown, 1000);
+
+const resBtn = document.getElementById("add-resolution");
+if(resBtn){
+  resBtn.onclick = async () => {
+    const inp = document.getElementById("new-resolution");
+    const val = inp.value.trim();
+    if(!val || !auth.currentUser) return;
+    try {
+      await addDoc(collection(db,"resolutions"), { uid:auth.currentUser.uid, text:val, completed:false, timestamp:serverTimestamp() });
+      inp.value = "";
+      logActivity("Added resolution");
+    } catch(e){ console.error(e); }
+  };
+}
+
+function loadResolutions(user){
+  const list = document.getElementById("resolutions-list");
+  if(!list) return;
+  const q = query(collection(db,"resolutions"), orderBy("timestamp","desc"));
+  onSnapshot(q, snap => {
+    list.innerHTML = "";
+    snap.forEach(d => {
+      const data = d.data();
+      if(data.uid !== user.uid) return;
+      const li = document.createElement("li");
+      li.style.cssText = "padding:8px; background:rgba(255,255,255,0.05); margin-bottom:6px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;";
+      li.innerHTML = `<span style="${data.completed?'text-decoration:line-through;opacity:0.5':''}">${data.text}</span>`;
+      
+      const div = document.createElement("div");
+      div.style.display="flex"; div.style.gap="4px";
+      
+      const btnC = document.createElement("button");
+      btnC.className="message-action-btn"; btnC.innerHTML="✔";
+      btnC.onclick = ()=> updateDoc(doc(db,"resolutions",d.id), {completed:!data.completed});
+      
+      const btnD = document.createElement("button");
+      btnD.className="message-action-btn"; btnD.innerHTML="✕";
+      btnD.style.color="#ff6666";
+      btnD.onclick = ()=> deleteDoc(doc(db,"resolutions",d.id));
+      
+      div.append(btnC, btnD);
+      li.append(div);
+      list.appendChild(li);
+    });
+    if(list.children.length === 0) list.innerHTML = '<div class="small" style="text-align:center; padding:10px;">No resolutions yet. Add one!</div>';
+  });
+}
+
+/* ===========================
+   End of module
+   =========================== */
+   
+/* =========================
+   🎆 New Year Fireworks Effect
+   ========================= */
+
+const canvas = document.getElementById("fireworks-canvas");
+const ctx = canvas.getContext("2d");
+
+let w, h;
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resize);
+resize();
+
+class Firework {
+  constructor() {
+    this.x = Math.random() * w;
+    this.y = h;
+    this.targetY = Math.random() * (h * 0.4);
+    this.speed = Math.random() * 3 + 5;
+    this.angle = Math.PI / 2 + (Math.random() - 0.5) * 0.2;
+    this.vx = Math.cos(this.angle) * this.speed;
+    this.vy = -Math.sin(this.angle) * this.speed;
+    this.hue = Math.random() * 360;
+    this.particles = [];
+    this.exploded = false;
+  }
+
+  update() {
+    if (!this.exploded) {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vy += 0.08; // gravity
+      if (this.vy >= 0 || this.y <= this.targetY) {
+        this.explode();
+      }
+    } else {
+      for (let i = this.particles.length - 1; i >= 0; i--) {
+        const p = this.particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.1;
+        p.alpha -= 0.015;
+        if (p.alpha <= 0) this.particles.splice(i, 1);
+      }
+    }
+  }
+
+  explode() {
+    this.exploded = true;
+    for (let i = 0; i < 60; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 4 + 1;
+      this.particles.push({
+        x: this.x,
+        y: this.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        alpha: 1,
+        color: `hsla(${this.hue}, 100%, 60%,`
+      });
+    }
+  }
+
+  draw() {
+    if (!this.exploded) {
+      ctx.fillStyle = `hsl(${this.hue}, 100%, 50%)`;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      this.particles.forEach(p => {
+        ctx.fillStyle = p.color + p.alpha + ')';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+  }
+}
+
+let fireworks = [];
+function animate() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.15)"; // trails
+  ctx.fillRect(0, 0, w, h);
+
+  if (Math.random() < 0.03) fireworks.push(new Firework());
+
+  for (let i = fireworks.length - 1; i >= 0; i--) {
+    fireworks[i].update();
+    fireworks[i].draw();
+    if (fireworks[i].exploded && fireworks[i].particles.length === 0) {
+      fireworks.splice(i, 1);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* =========================
+   📷 Camera App Logic (Enhanced)
+   ========================= */
+const camOverlay = document.getElementById('camera-overlay');
+const camVideo = document.getElementById('cam-video');
+const camFlash = document.getElementById('cam-flash');
+const openCamBtn = document.getElementById('open-camera');
+const closeCamBtn = document.getElementById('close-cam');
+const switchCamBtn = document.getElementById('switch-cam');
+const shutterBtn = document.getElementById('shutter-btn');
+const filterList = document.getElementById('filter-list');
+const camTimerBtn = document.getElementById('cam-timer');
+const countdownDisplay = document.getElementById('countdown-display');
+const lastPhotoImg = document.getElementById('last-photo');
+const camGalleryBtn = document.getElementById('cam-gallery');
+const recTimer = document.getElementById('recording-timer');
+const recTimeSpan = document.getElementById('rec-time');
+const modePhotoBtn = document.getElementById('mode-photo');
+const modeVideoBtn = document.getElementById('mode-video');
+
+let stream = null;
+let currentFacingMode = 'user';
+let useTimer = false;
+let currentFilter = 'f-normal';
+let isVideoMode = false;
+let mediaRecorder = null;
+let recordedChunks = [];
+let isRecording = false;
+let recStartTime;
+let recInterval;
+
+// Canvas for video processing (burning filters)
+const processCanvas = document.createElement('canvas');
+const processCtx = processCanvas.getContext('2d');
+let animFrameId;
+
+const filters = [
+  { name: 'Normal', class: 'f-normal' },
+  { name: 'B&W', class: 'f-bw' },
+  { name: 'Warm', class: 'f-warm' },
+  { name: 'Cool', class: 'f-cool' },
+  { name: 'Drama', class: 'f-dramatic' },
+  { name: 'Cyber', class: 'f-cyber' },
+  { name: 'Vintage', class: 'f-vintage' },
+  { name: 'Sepia', class: 'f-sepia' }
+];
+
+// Generate Filter List
+filterList.innerHTML = '';
+filters.forEach(f => {
+  const el = document.createElement('div');
+  el.className = 'filter-item';
+  if(f.class === 'f-normal') el.classList.add('active');
+  el.innerHTML = `<div style="width:100%;height:100%;position:absolute;top:0;left:0;border-radius:50%;background:linear-gradient(45deg, transparent, rgba(255,255,255,0.1));" class="${f.class}"></div><span>${f.name}</span>`;
+  
+  el.onclick = () => {
+    document.querySelectorAll('.filter-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    currentFilter = f.class;
+    updateVideoClass();
+  };
+  filterList.appendChild(el);
+});
+
+function updateVideoClass() {
+  camVideo.className = currentFilter;
+  if(currentFacingMode === 'environment') camVideo.classList.add('rear');
+}
+
+async function startCamera() {
+  if (stream) stream.getTracks().forEach(track => track.stop());
+  
+  try {
+    const constraints = { 
+      video: { 
+        facingMode: currentFacingMode,
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
+      },
+      audio: true 
+    };
+    
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    camVideo.srcObject = stream;
+    camVideo.muted = true; // Mute playback
+    updateVideoClass();
+  } catch (err) {
+    console.error("Camera Error:", err);
+    alert("Unable to access camera/microphone. Please check permissions.");
+  }
+}
+
+function stopCamera() {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+  }
+  camOverlay.style.display = 'none';
+  document.body.style.overflow = '';
+  if(isRecording) stopRecording();
+  cancelAnimationFrame(animFrameId);
+}
+
+// Mode Switching
+modePhotoBtn.onclick = () => setMode(false);
+modeVideoBtn.onclick = () => setMode(true);
+
+function setMode(video) {
+  isVideoMode = video;
+  modePhotoBtn.classList.toggle('active', !video);
+  modeVideoBtn.classList.toggle('active', video);
+  shutterBtn.classList.toggle('shutter-video', video);
+}
+
+// Recording Logic
+function drawToCanvas() {
+  if (!isRecording && camOverlay.style.display === 'none') return;
+
+  processCanvas.width = camVideo.videoWidth;
+  processCanvas.height = camVideo.videoHeight;
+  
+  const computedFilter = getComputedStyle(camVideo).filter;
+  processCtx.filter = computedFilter && computedFilter !== 'none' ? computedFilter : 'none';
+  
+  processCtx.save();
+  if (currentFacingMode === 'user') {
+    processCtx.translate(processCanvas.width, 0);
+    processCtx.scale(-1, 1);
+  }
+  processCtx.drawImage(camVideo, 0, 0, processCanvas.width, processCanvas.height);
+  processCtx.restore();
+  
+  if(isRecording) animFrameId = requestAnimationFrame(drawToCanvas);
+}
+
+function startRecording() {
+  if(!stream) return;
+  recordedChunks = [];
+  
+  drawToCanvas();
+  
+  const canvasStream = processCanvas.captureStream(30);
+  const audioTrack = stream.getAudioTracks()[0];
+  if(audioTrack) canvasStream.addTrack(audioTrack);
+  
+  try {
+    mediaRecorder = new MediaRecorder(canvasStream, { mimeType: 'video/webm;codecs=vp9' });
+  } catch (e) {
+    mediaRecorder = new MediaRecorder(canvasStream);
+  }
+  
+  mediaRecorder.ondataavailable = (e) => {
+    if (e.data.size > 0) recordedChunks.push(e.data);
+  };
+  
+  mediaRecorder.onstop = saveVideo;
+  
+  mediaRecorder.start();
+  isRecording = true;
+  shutterBtn.classList.add('shutter-recording');
+  recTimer.classList.add('active');
+  
+  recStartTime = Date.now();
+  recInterval = setInterval(() => {
+    const diff = Math.floor((Date.now() - recStartTime) / 1000);
+    const m = Math.floor(diff / 60).toString().padStart(2, '0');
+    const s = (diff % 60).toString().padStart(2, '0');
+    recTimeSpan.textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+function stopRecording() {
+  if(!mediaRecorder || mediaRecorder.state === 'inactive') return;
+  mediaRecorder.stop();
+  isRecording = false;
+  shutterBtn.classList.remove('shutter-recording');
+  recTimer.classList.remove('active');
+  clearInterval(recInterval);
+  recTimeSpan.textContent = "00:00";
+  cancelAnimationFrame(animFrameId);
+}
+
+function saveVideo() {
+  const blob = new Blob(recordedChunks, { type: 'video/webm' });
+  const url = URL.createObjectURL(blob);
+  
+  lastPhotoImg.src = processCanvas.toDataURL('image/jpeg', 0.5);
+  lastPhotoImg.style.display = 'block';
+  lastPhotoImg.dataset.videoUrl = url;
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `smart-camtin-video-${Date.now()}.webm`;
+  a.click();
+}
+
+// Shutter Handler
+shutterBtn.addEventListener('click', () => {
+  if (isVideoMode) {
+    if (isRecording) stopRecording();
+    else startRecording();
+  } else {
+    if (useTimer) {
+      let count = 3;
+      countdownDisplay.style.display = 'block';
+      countdownDisplay.textContent = count;
+      const interval = setInterval(() => {
+        count--;
+        if (count > 0) countdownDisplay.textContent = count;
+        else {
+          clearInterval(interval);
+          countdownDisplay.style.display = 'none';
+          takePhoto();
+        }
+      }, 1000);
+    } else {
+      takePhoto();
+    }
+  }
+});
+
+function takePhoto() {
+  camFlash.style.opacity = 1;
+  setTimeout(() => camFlash.style.opacity = 0, 150);
+
+  processCanvas.width = camVideo.videoWidth;
+  processCanvas.height = camVideo.videoHeight;
+  const ctx = processCanvas.getContext('2d');
+  
+  const computedFilter = getComputedStyle(camVideo).filter;
+  ctx.filter = computedFilter && computedFilter !== 'none' ? computedFilter : 'none';
+  
+  ctx.save();
+  if (currentFacingMode === 'user') {
+    ctx.translate(processCanvas.width, 0);
+    ctx.scale(-1, 1);
+  }
+  ctx.drawImage(camVideo, 0, 0, processCanvas.width, processCanvas.height);
+  ctx.restore();
+  
+  const dataURL = processCanvas.toDataURL('image/jpeg', 0.95);
+  lastPhotoImg.src = dataURL;
+  lastPhotoImg.style.display = 'block';
+  delete lastPhotoImg.dataset.videoUrl; 
+  
+  const link = document.createElement('a');
+  link.download = `smart-camtin-${Date.now()}.jpg`;
+  link.href = dataURL;
+  link.click();
+}
+
+camGalleryBtn.onclick = () => {
+    if(lastPhotoImg.dataset.videoUrl) {
+      const a = document.createElement('a');
+      a.href = lastPhotoImg.dataset.videoUrl;
+      a.download = `smart-camtin-video-saved.webm`;
+      a.click();
+    } else if(lastPhotoImg.src) {
+      const link = document.createElement('a');
+      link.download = `smart-camtin-last-photo.jpg`;
+      link.href = lastPhotoImg.src;
+      link.click();
+    }
+}
+
+// Controls
+openCamBtn.addEventListener('click', () => {
+  camOverlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  startCamera();
+});
+closeCamBtn.addEventListener('click', stopCamera);
+switchCamBtn.addEventListener('click', () => {
+  currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+  startCamera();
+});
+camTimerBtn.addEventListener('click', () => {
+  useTimer = !useTimer;
+  camTimerBtn.classList.toggle('active');
+});
+
+/* =========================
+   🎉 New Year Mode Toggle
+   ========================= */
+const nyBadge = document.getElementById("newyear-badge");
+
+// Auto-enable New Year mode initially
+document.body.classList.add("newyear");
+document.querySelectorAll(".card").forEach(card => card.classList.add("newyear-glow"));
+
+nyBadge.addEventListener("click", () => {
+  document.body.classList.toggle("newyear");
+  document.querySelectorAll(".card").forEach(card => {
+    card.classList.toggle("newyear-glow");
+  });
+});
+
+</script>
+<script>
+  // Failsafe: Ensure loader is removed even if main script stalls
+  setTimeout(() => {
+    const l = document.getElementById('loader');
+    if(l) l.style.display = 'none';
+  }, 4000);
+</script>
+</body>
+</html>
